@@ -23,8 +23,8 @@
     --accent2: #ff6b35;
     --uber: #000000;
     --uber-text: #ffffff;
-    --pop: #facc15;
-    --pop-text: #000000;
+    --pop: #ff0066;
+    --pop-text: #ffffff;
     --text: #e8eaf0;
     --muted: #6b7280;
     --danger: #ff4757;
@@ -65,14 +65,19 @@
   .progress-bar { background: var(--accent); height: 100%; width: 0%; transition: width 0.4s ease; }
   .meta-input-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 12px; }
 
-  /* CRONOMETRO HORA PARADA */
-  .cron-container { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-top: 14px; }
-  .cron-header { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--muted); margin-bottom: 8px; }
-  .cron-display { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: bold; color: var(--danger); text-align: center; margin: 6px 0; }
-  .cron-actions { display: flex; gap: 8px; }
-  .cron-btn { flex: 1; padding: 8px; font-family: 'DM Mono', monospace; font-size: 12px; border-radius: 6px; border: 1px solid var(--border); cursor: pointer; background: var(--surface); color: var(--text); }
-  .cron-btn.active { background: var(--danger); color: #000; border-color: var(--danger); font-weight: bold; }
-  .cron-btn.resume { background: var(--accent); color: #000; border-color: var(--accent); font-weight: bold; }
+  /* NOVO PAINEL DO CRONÔMETRO DIGITAL */
+  .jornada-master-btn { width: 100%; padding: 16px; border: none; border-radius: 10px; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 14px; text-transform: uppercase; cursor: pointer; background: var(--accent); color: #000; transition: all 0.2s; margin-bottom: 12px; }
+  .jornada-master-btn.rodando { background: var(--warn); color: #000; }
+  .cron-display-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; text-align: center; }
+  .cron-box { background: var(--surface2); padding: 10px; border-radius: 8px; border: 1px solid var(--border); }
+  .cron-box .lbl { font-size: 9px; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; }
+  .cron-box .num { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: bold; }
+  .cron-box.ativo-dir { color: var(--accent); }
+  .cron-box.ativo-par { color: var(--danger); }
+  
+  .cron-sub-actions { display: flex; gap: 10px; }
+  .sub-btn { flex: 1; padding: 10px; font-family: 'DM Mono', monospace; font-size: 11px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface2); color: var(--text); cursor: pointer; }
+  .sub-btn.active-pause { border-color: var(--danger); color: var(--danger); font-weight: bold; }
 
   /* GRIDS E INPUTS */
   .time-grid, .corridas-grid, .km-grid-3, .km-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -194,39 +199,42 @@
   </div>
 
   <div class="card">
-    <div class="card-title"><span>🕐</span> Registro de Tempo</div>
+    <div class="card-title"><span>⏱️</span> Taxímetro & Controle de Turno</div>
+    
+    <button class="jornada-master-btn" id="masterBtn" onclick="gerenciarJornada()">🛫 Iniciar Jornada</button>
+    
+    <div class="cron-display-row">
+      <div class="cron-box" id="boxDirecao">
+        <div class="lbl">🕒 Tempo em Turno</div>
+        <div class="num" id="txtTurnoTotal">00:00:00</div>
+      </div>
+      <div class="cron-box" id="boxParado">
+        <div class="lbl">🛑 Tempo Parado</div>
+        <div class="num" id="txtTempoParado">00:00:00</div>
+      </div>
+    </div>
+
+    <div class="cron-sub-actions">
+      <button class="sub-btn" id="btnPausaCron" onclick="pausarParaAlmoco(true)" disabled>⏸️ Pausar P/ Almoço</button>
+      <button class="sub-btn" id="btnVoltaCron" onclick="pausarParaAlmoco(false)" disabled>▶️ Retomar Rua</button>
+    </div>
+
+    <div class="divider"></div>
+
     <div class="time-grid">
       <div class="input-group">
-        <label>Hora Inicial</label>
-        <input type="time" id="horaInicio" oninput="calcularTudo()">
+        <label>Hora Inicial (Manual)</label>
+        <input type="time" id="horaInicio" oninput="calcularTudo(false, true)">
       </div>
       <div class="input-group">
-        <label>Hora Final</label>
-        <input type="time" id="horaFim" oninput="calcularTudo()">
+        <label>Hora Final (Manual)</label>
+        <input type="time" id="horaFim" oninput="calcularTudo(false, true)">
       </div>
     </div>
 
-    <div class="cron-container">
-      <div class="cron-header">
-        <span>🛑 CRONÔMETRO DE HORA PARADA</span>
-        <span id="cronStatus" style="color:var(--muted)">Desativado</span>
-      </div>
-      <div class="cron-display" id="cronTime">00:00:00</div>
-      <div class="cron-actions">
-        <button class="cron-btn active" id="btnPausarTrab" onclick="alternarCronometro(true)">Pausar Trabalho</button>
-        <button class="cron-btn" id="btnVoltarTrab" onclick="alternarCronometro(false)" disabled>Retomar Rua</button>
-      </div>
-    </div>
-
-    <div class="time-grid" style="margin-top:14px">
-      <div class="time-result">
-        <div class="time-result-label">Tempo de Turno Total</div>
-        <div class="time-result-value" id="horasTrabalhadas">—</div>
-      </div>
-      <div class="time-result">
-        <div class="time-result-label">Ganho p/ Hora Líquida</div>
-        <div class="time-result-value" id="ganhoPorHora">—</div>
-      </div>
+    <div class="time-result" style="margin-top:14px">
+      <div class="time-result-label">Ganho p/ Hora Líquida (Direção)</div>
+      <div class="time-result-value" id="ganhoPorHora">—</div>
     </div>
   </div>
 
@@ -324,10 +332,10 @@
     <div class="resumo-row"><span style="color:var(--muted)">💸 Despesas Totais</span><span style="color:var(--danger); font-weight:bold;" id="r-gastos">R$ 0,00</span></div>
     <div class="resumo-row"><span style="color:var(--muted)">🏁 KM Percorrido</span><span id="r-km">0 km</span></div>
     <div class="resumo-row"><span style="color:var(--muted)">⛽ Combustível Estimado</span><span style="color:var(--accent2)" id="r-consumo">—</span></div>
-    <div class="resumo-row"><span style="color:var(--muted)">⏱️ Duração do Turno</span><span id="r-horas">—</span></div>
+    <div class="resumo-row"><span style="color:var(--muted)">⏱️ Tempo de Trabalho Total</span><span id="r-horas">—</span></div>
     <div class="resumo-row"><span style="color:var(--muted)">📈 Média por Corrida</span><span style="color:var(--accent)" id="r-porcorrida">—</span></div>
     <div class="resumo-row"><span style="color:var(--muted)">🛣️ Lucratividade por KM</span><span style="color:var(--accent)" id="r-porKm">—</span></div>
-    <div class="resumo-row"><span style="color:var(--muted)">⚡ Rendimento por Hora</span><span style="color:var(--accent)" id="r-porhora">—</span></div>
+    <div class="resumo-row"><span style="color:var(--muted)">⚡ Rendimento por Hora Líquida</span><span style="color:var(--accent)" id="r-porhora">—</span></div>
 
     <div class="lucro-box">
       <div class="lucro-label">LUCRO LÍQUIDO REAL</div>
@@ -348,20 +356,27 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  // Inicialização de Data Padrão (Hoje)
+  // Inicialização de Data Padrão
   const campoData = document.getElementById('dataTrabalho');
-  const dHoje = new Date();
-  campoData.value = dHoje.toISOString().split('T')[0];
+  campoData.value = new Date().toISOString().split('T')[0];
 
   let extraGastos = [];
   let historico = JSON.parse(localStorage.getItem('motorista_historico')) || [];
   
-  // Cronometro Hora Parada
-  let cronSegundos = 0;
-  let cronInterval = null;
-  let cronRodando = false;
+  // Estado dos Cronometros Modernos
+  let statusJornada = "parado"; // parado | rodando | pausado
+  let segundosTurno = 0;
+  let segundosParado = 0;
+  let timerInterval = null;
 
   function fmt(n) { return 'R$ ' + n.toFixed(2).replace('.', ','); }
+  function formatarTempo(totalSegundos) {
+    let h = Math.floor(totalSegundos / 3600).toString().padStart(2, '0');
+    let m = Math.floor((totalSegundos % 3600) / 60).toString().padStart(2, '0');
+    let s = (totalSegundos % 60).toString().padStart(2, '0');
+    return `${h}:${m}:${s}`;
+  }
+
   function showToast(msg) {
     const toast = document.getElementById('toast'); toast.textContent = msg; toast.classList.add('show');
     setTimeout(() => { toast.classList.remove('show'); }, 2500);
@@ -378,32 +393,77 @@
     localStorage.setItem('alvoMes', document.getElementById('alvoMes').value);
   }
 
-  function alternarCronometro(pausarTrabalho) {
-    if (pausarTrabalho) {
-      document.getElementById('btnPausarTrab').classList.remove('active');
-      document.getElementById('btnPausarTrab').disabled = true;
-      document.getElementById('btnVoltarTrab').classList.add('resume');
-      document.getElementById('btnVoltarTrab').disabled = false;
-      document.getElementById('cronStatus').textContent = "Trabalho Pausado";
-      document.getElementById('cronStatus').style.color = "var(--danger)";
+  // GERENCIADOR DO BOTÃO PRINCIPAL (TAXÍMETRO)
+  function gerenciarJornada() {
+    const agora = new Date();
+    const horaFormatada = agora.getHours().toString().padStart(2, '0') + ':' + agora.getMinutes().toString().padStart(2, '0');
+
+    if (statusJornada === "parado") {
+      // INICIAR TRABALHO
+      statusJornada = "rodando";
+      document.getElementById('horaInicio').value = horaFormatada;
+      document.getElementById('horaFim').value = "";
       
-      cronInterval = setInterval(() => {
-        cronSegundos++;
-        let h = Math.floor(cronSegundos / 3600).toString().padStart(2, '0');
-        let m = Math.floor((cronSegundos % 3600) / 60).toString().padStart(2, '0');
-        let s = (cronSegundos % 60).toString().padStart(2, '0');
-        document.getElementById('cronTime').textContent = `${h}:${m}:${s}`;
-        calcularTudo();
+      document.getElementById('masterBtn').textContent = "🛑 Finalizar Jornada";
+      document.getElementById('masterBtn').classList.add('rodando');
+      document.getElementById('btnPausaCron').disabled = false;
+      document.getElementById('boxDirecao').classList.add('ativo-dir');
+      
+      segundosTurno = 0;
+      segundosParado = 0;
+
+      timerInterval = setInterval(() => {
+        if (statusJornada === "rodando") {
+          segundosTurno++;
+        } else if (statusJornada === "pausado") {
+          segundosTurno++; // Turno bruto continua correndo
+          segundosParado++;
+        }
+        document.getElementById('txtTurnoTotal').textContent = formatarTempo(segundosTurno);
+        document.getElementById('txtTempoParado').textContent = formatarTempo(segundosParado);
+        calcularTudo(false, false);
       }, 1000);
+
+      showToast("Jornada Iniciada! Boa sorte na rua! 🛫");
+
     } else {
-      document.getElementById('btnVoltarTrab').classList.remove('resume');
-      document.getElementById('btnVoltarTrab').disabled = true;
-      document.getElementById('btnPausarTrab').classList.add('active');
-      document.getElementById('btnPausarTrab').disabled = false;
-      document.getElementById('cronStatus').textContent = "Rodando na Rua";
-      document.getElementById('cronStatus').style.color = "var(--accent)";
+      // FINALIZAR TRABALHO
+      if(!confirm("Deseja realmente encerrar a jornada de hoje?")) return;
+      statusJornada = "parado";
+      document.getElementById('horaFim').value = horaFormatada;
       
-      clearInterval(cronInterval);
+      clearInterval(timerInterval);
+      
+      document.getElementById('masterBtn').textContent = "🛫 Iniciar Jornada";
+      document.getElementById('masterBtn').classList.remove('rodando');
+      document.getElementById('btnPausaCron').disabled = true;
+      document.getElementById('btnVoltarCron').disabled = true;
+      document.getElementById('btnPausaCron').classList.remove('active-pause');
+      document.getElementById('boxDirecao').classList.remove('ativo-dir');
+      document.getElementById('boxParado').classList.remove('ativo-par');
+
+      calcularTudo(false, true);
+      showToast("Jornada Encerrada! Veja o resumo abaixo. 🛑");
+    }
+  }
+
+  function pausarParaAlmoco(devePausar) {
+    if (devePausar) {
+      statusJornada = "pausado";
+      document.getElementById('btnPausaCron').disabled = true;
+      document.getElementById('btnPausaCron').classList.add('active-pause');
+      document.getElementById('btnVoltarCron').disabled = false;
+      document.getElementById('boxDirecao').classList.remove('ativo-dir');
+      document.getElementById('boxParado').classList.add('ativo-par');
+      showToast("Descanso ativado! Aproveite o rango 🍽️");
+    } else {
+      statusJornada = "rodando";
+      document.getElementById('btnPausaCron').disabled = false;
+      document.getElementById('btnPausaCron').classList.remove('active-pause');
+      document.getElementById('btnVoltarCron').disabled = true;
+      document.getElementById('boxDirecao').classList.add('ativo-dir');
+      document.getElementById('boxParado').classList.remove('ativo-par');
+      showToast("De volta à batalha! 🚗💨");
     }
   }
 
@@ -416,28 +476,33 @@
     calcularTudo(false);
   }
 
-  function calcularTudo(limparOdometro = false) {
+  function calcularTudo(limparOdometro = false, forcarUsoDosCamposManuais = false) {
     if (limparOdometro) {
       document.getElementById('kmInicial').value = '';
       document.getElementById('kmFinal').value = '';
     }
 
-    const ini = document.getElementById('horaInicio').value;
-    const fim = document.getElementById('horaFim').value;
     let horasTurnoBruto = 0;
+    let tempoDeTextoExibido = "0h00m";
+    let horasDescontoParado = segundosParado / 3600;
 
-    if (ini && fim) {
-      const [h1, m1] = ini.split(':').map(Number);
-      const [h2, m2] = fim.split(':').map(Number);
-      let minutos = (h2 * 60 + m2) - (h1 * 60 + m1);
-      if (minutos < 0) minutos += 24 * 60;
-      horasTurnoBruto = minutos / 60;
-      
-      let hh = Math.floor(minutos / 60);
-      let mm = minutos % 60;
-      document.getElementById('horasTrabalhadas').textContent = `${hh}h${mm.toString().padStart(2,'0')}m`;
+    // Decidir se calcula pelo Cronômetro ou pelas Caixas Digitadas
+    if (statusJornada !== "parado" && !forcarUsoDosCamposManuais) {
+      horasTurnoBruto = segundosTurno / 3600;
+      let mTotal = Math.floor(segundosTurno / 60);
+      tempoDeTextoExibido = `${Math.floor(mTotal/60)}h${(mTotal%60).toString().padStart(2,'0')}m`;
     } else {
-      document.getElementById('horasTrabalhadas').textContent = '—';
+      // Cálculo via caixas manuais
+      const ini = document.getElementById('horaInicio').value;
+      const fim = document.getElementById('horaFim').value;
+      if (ini && fim) {
+        const [h1, m1] = ini.split(':').map(Number);
+        const [h2, m2] = fim.split(':').map(Number);
+        let minutos = (h2 * 60 + m2) - (h1 * 60 + m1);
+        if (minutos < 0) minutos += 24 * 60;
+        horasTurnoBruto = minutos / 60;
+        tempoDeTextoExibido = `${Math.floor(minutos / 60)}h${(minutos % 60).toString().padStart(2,'0')}m`;
+      }
     }
 
     const uberC = parseFloat(document.getElementById('uberCorridas').value) || 0;
@@ -470,3 +535,255 @@
     const g2 = parseFloat(document.getElementById('gastoAlimentacao').value) || 0;
     const g3 = parseFloat(document.getElementById('gastoEstacionamento').value) || 0;
     const gExtras = extraGastos.reduce((a, b) => a + b.val, 0);
+    const totalGastos = g1 + g2 + g3 + gExtras;
+
+    document.getElementById('totalGastos').textContent = fmt(totalGastos);
+
+    // Tempo Líquido na Direção
+    let horasLiquidasDirecao = horasTurnoBruto - horasDescontoParado;
+    if (horasLiquidasDirecao < 0.05) horasLiquidasDirecao = horasTurnoBruto; // Proteção contra bugs
+
+    if (horasLiquidasDirecao > 0 && totalBruto > 0) {
+      document.getElementById('ganhoPorHora').textContent = fmt(totalBruto / horasLiquidasDirecao) + '/h';
+    } else {
+      document.getElementById('ganhoPorHora').textContent = '—';
+    }
+
+    const lucro = totalBruto - totalGastos;
+    const lucroEl = document.getElementById('lucroLiquido');
+    lucroEl.textContent = (lucro < 0 ? '-' : '') + fmt(Math.abs(lucro));
+    lucroEl.style.color = lucro >= 0 ? 'var(--accent)' : 'var(--danger)';
+
+    // alimentar resumo inferior
+    document.getElementById('r-corridas').textContent = totalCorridas;
+    document.getElementById('r-bruto').textContent = fmt(totalBruto);
+    document.getElementById('r-gastos').textContent = fmt(totalGastos);
+    document.getElementById('r-km').textContent = km > 0 ? km.toFixed(1) + ' km' : '0 km';
+    document.getElementById('r-consumo').textContent = litrosCalculados > 0 ? litrosCalculados.toFixed(1) + ' L' : '—';
+    document.getElementById('r-horas').textContent = tempoDeTextoExibido;
+    document.getElementById('r-porcorrida').textContent = totalCorridas > 0 ? fmt(totalBruto / totalCorridas) : '—';
+    document.getElementById('r-porhora').textContent = horasLiquidasDirecao > 0 && totalBruto > 0 ? fmt(totalBruto / horasLiquidasDirecao) + '/h' : '—';
+    document.getElementById('r-porKm').textContent = km > 0 ? fmt(totalBruto / km) + '/km' : '—';
+
+    atualizarMetasVisuais();
+  }
+
+  function atualizarMetasVisuais() {
+    const dataSelecionadaStr = campoData.value;
+    if(!dataSelecionadaStr) return;
+
+    const alvoDia = parseFloat(document.getElementById('alvoDia').value) || 1;
+    const alvoSemana = parseFloat(document.getElementById('alvoSemana').value) || 1;
+    const alvoMes = parseFloat(document.getElementById('alvoMes').value) || 1;
+
+    // Calcular Lucro Atual da Tela
+    const uberG = parseFloat(document.getElementById('uberGanho').value) || 0;
+    const popG  = parseFloat(document.getElementById('popGanho').value) || 0;
+    const totalBrutoTela = uberG + popG;
+    const g1 = parseFloat(document.getElementById('gastoCombustivel').value) || 0;
+    const g2 = parseFloat(document.getElementById('gastoAlimentacao').value) || 0;
+    const g3 = parseFloat(document.getElementById('gastoEstacionamento').value) || 0;
+    const gExtras = extraGastos.reduce((a, b) => a + b.val, 0);
+    const lucroTela = totalBrutoTela - (g1+g2+g3+gExtras);
+
+    let liquidoDia = lucroTela;
+    let liquidoSemana = lucroTela;
+    let liquidoMes = lucroTela;
+
+    const selDate = new Date(dataSelecionadaStr + 'T12:00:00');
+    
+    // Janela semanal
+    const inicioSemana = new Date(selDate);
+    inicioSemana.setDate(selDate.getDate() - selDate.getDay());
+    inicioSemana.setHours(0,0,0,0);
+    
+    const fimSemana = new Date(inicioSemana);
+    fimSemana.setDate(inicioSemana.getDate() + 6);
+    fimSemana.setHours(23,59,59,999);
+
+    historico.forEach(d => {
+      if(d.data === dataSelecionadaStr) {
+        liquidoDia = lucroTela; 
+      } else {
+        const dDate = new Date(d.data + 'T12:00:00');
+        if(dDate >= inicioSemana && dDate <= fimSemana) {
+          liquidoSemana += d.lucro;
+        }
+        if(dDate.getMonth() === selDate.getMonth() && dDate.getFullYear() === selDate.getFullYear()) {
+          liquidoMes += d.lucro;
+        }
+      }
+    });
+
+    if(totalBrutoTela === 0 && g1===0 && g2===0) {
+      const registroHoje = historico.find(d => d.data === dataSelecionadaStr);
+      if(registroHoje) liquidoDia = registroHoje.lucro;
+    }
+
+    document.getElementById('metaDiaTexto').textContent = `${fmt(liquidoDia)} / ${fmt(alvoDia)}`;
+    document.getElementById('metaSemanaTexto').textContent = `${fmt(liquidoSemana)} / ${fmt(alvoSemana)}`;
+    document.getElementById('metaMesTexto').textContent = `${fmt(liquidoMes)} / ${fmt(alvoMes)}`;
+
+    document.getElementById('barraDia').style.width = Math.min(100, Math.max(0, (liquidoDia/alvoDia)*100)) + '%';
+    document.getElementById('barraSemana').style.width = Math.min(100, Math.max(0, (liquidoSemana/alvoSemana)*100)) + '%';
+    document.getElementById('barraMes').style.width = Math.min(100, Math.max(0, (liquidoMes/alvoMes)*100)) + '%';
+  }
+
+  function salvarDiariaNoHistorico() {
+    const dataSel = campoData.value;
+    if(!dataSel) { showToast('Selecione a data da diária!'); return; }
+
+    const uberC = parseFloat(document.getElementById('uberCorridas').value) || 0;
+    const uberG = parseFloat(document.getElementById('uberGanho').value) || 0;
+    const popC  = parseFloat(document.getElementById('popCorridas').value) || 0;
+    const popG  = parseFloat(document.getElementById('popGanho').value) || 0;
+    const km = parseFloat(document.getElementById('kmRodados').value) || 0;
+    
+    const totalCorridas = uberC + popC;
+    const totalBruto = uberG + popG;
+    
+    const g1 = parseFloat(document.getElementById('gastoCombustivel').value) || 0;
+    const g2 = parseFloat(document.getElementById('gastoAlimentacao').value) || 0;
+    const g3 = parseFloat(document.getElementById('gastoEstacionamento').value) || 0;
+    const gExtras = extraGastos.reduce((a, b) => a + b.val, 0);
+    const totalGastos = g1 + g2 + g3 + gExtras;
+    const lucroStr = totalBruto - totalGastos;
+
+    if(totalBruto === 0 && totalGastos === 0) {
+      showToast('Preencha os ganhos ou despesas para salvar!');
+      return;
+    }
+
+    historico = historico.filter(h => h.data !== dataSel);
+
+    historico.unshift({
+      data: dataSel,
+      corridas: totalCorridas,
+      bruto: totalBruto,
+      gastos: totalGastos,
+      lucro: lucroStr,
+      km: km
+    });
+
+    historico.sort((a,b) => new Date(b.data) - new Date(a.data));
+    localStorage.setItem('motorista_historico', JSON.stringify(historico));
+    renderHistorico();
+    calcularTudo(false, true);
+    showToast('Diária salva com sucesso! 💾');
+  }
+
+  function renderHistorico() {
+    const container = document.getElementById('listaHistorico');
+    if(historico.length === 0) {
+      container.innerHTML = `<div style="color:var(--muted); font-size:12px; text-align:center; padding:10px;">Nenhuma diária salva ainda.</div>`;
+      return;
+    }
+
+    container.innerHTML = historico.map(h => {
+      const parts = h.data.split('-');
+      const dataFormatada = `${parts[2]}/${parts[1]}/${parts[0]}`;
+      return `
+        <div class="hist-item">
+          <div class="hist-meta">
+            <span class="hist-date">${dataFormatada}</span>
+            <div class="hist-stats">🚗 ${h.corridas} corr | 📍 ${h.km.toFixed(1)} km</div>
+          </div>
+          <div style="display:flex; align-items:center;">
+            <div class="hist-value" style="color: ${h.lucro >= 0 ? 'var(--accent)' : 'var(--danger)'}">
+              ${h.lucro >= 0 ? '' : '-'}${fmt(Math.abs(h.lucro))}
+            </div>
+            <button class="del-hist" onclick="deletarItemHistorico('${h.data}')">✕</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function deletarItemHistorico(dataKey) {
+    if(!confirm('Excluir este dia do histórico permanentemente?')) return;
+    historico = historico.filter(h => h.data !== dataKey);
+    localStorage.setItem('motorista_historico', JSON.stringify(historico));
+    renderHistorico();
+    calcularTudo(false, true);
+    showToast('Item removido do histórico');
+  }
+
+  function adicionarGasto() {
+    const nome = document.getElementById('outroNome').value.trim();
+    const val = parseFloat(document.getElementById('outroValor').value) || 0;
+    if (!nome || val <= 0) { showToast('Preencha descrição e valor'); return; }
+    extraGastos.push({ id: Date.now(), nome, val });
+    document.getElementById('outroNome').value = '';
+    document.getElementById('outroValor').value = '';
+    renderExtras();
+    calcularTudo();
+  }
+
+  function renderExtras() {
+    document.getElementById('extraGastos').innerHTML = extraGastos.map(e => `
+      <div class="extra-gasto">
+        <span>${e.nome}</span><span style="color:var(--danger)">- ${fmt(e.val)}</span>
+        <button onclick="removerGasto(${e.id})">✕</button>
+      </div>
+    `).join('');
+  }
+
+  function removerGasto(id) {
+    extraGastos = extraGastos.filter(e => e.id !== id);
+    renderExtras(); calcularTudo();
+  }
+
+  function resetTudo() {
+    if (!confirm('Deseja limpar todos os campos digitados na tela? (Seu histórico salvo não será apagado)')) return;
+    document.querySelectorAll('main input').forEach(i => {
+      if(i.type !== 'number' || (!i.id.startsWith('alvo'))) i.value = '';
+    });
+    extraGastos = [];
+    segundosTurno = 0;
+    segundosParado = 0;
+    clearInterval(timerInterval);
+    statusJornada = "parado";
+    document.getElementById('masterBtn').textContent = "🛫 Iniciar Jornada";
+    document.getElementById('masterBtn').classList.remove('rodando');
+    document.getElementById('btnPausaCron').disabled = true;
+    document.getElementById('btnVoltarCron').disabled = true;
+    document.getElementById('txtTurnoTotal').textContent = "00:00:00";
+    document.getElementById('txtTempoParado').textContent = "00:00:00";
+    renderExtras();
+    campoData.value = new Date().toISOString().split('T')[0];
+    calcularTudo(false, true);
+    showToast('Campos limpos ✓');
+  }
+
+  function exportarResumo() {
+    const ini = document.getElementById('horaInicio').value || '—';
+    const fim = document.getElementById('horaFim').value || '—';
+    const horas = document.getElementById('r-horas').textContent;
+    const totalC = document.getElementById('r-corridas').textContent;
+    const bruto = document.getElementById('r-bruto').textContent;
+    const gastos = document.getElementById('r-gastos').textContent;
+    const km = document.getElementById('r-km').textContent;
+    const consumo = document.getElementById('r-consumo').textContent;
+    const porcorrida = document.getElementById('r-porcorrida').textContent;
+    const porhora = document.getElementById('r-porhora').textContent;
+    const porKm = document.getElementById('r-porKm').textContent;
+    const lucro = document.getElementById('lucroLiquido').textContent;
+    
+    const parts = campoData.value.split('-');
+    const dataStr = `${parts[2]}/${parts[1]}/${parts[0]}`;
+
+    const texto = `🚗 DIÁRIA DO MOTORISTA — ${dataStr}\n━━━━━━━━━━━━━━━━━━━━\n\n⏱️ Horário: ${ini} às ${fim}\n⏱️ Tempo de Trabalho Total: ${horas}\n🚗 Corridas: ${totalC} feitas\n\n📍 KM Rodado: ${km}\n⛽ Combustível Consumido: ${consumo}\n\n💰 Ganho Bruto: ${bruto}\n💸 Total Gastos: ${gastos}\n━━━━━━━━━━━━━━━━━━━━\n\n📈 Ganho por Corrida: ${porcorrida}\n⚡ Rendimento por Hora Líquida: ${porhora}\n🛣️ Ganho por KM: ${porKm}\n\n✅ LUCRO LÍQUIDO: ${lucro}`;
+
+    const textarea = document.createElement('textarea'); textarea.value = texto; document.body.appendChild(textarea);
+    textarea.select();
+    try { document.execCommand('copy'); showToast('Resumo copiado! ✓'); } catch (err) { showToast('Erro ao copiar'); }
+    document.body.removeChild(textarea);
+  }
+
+  // Execuções Iniciais
+  carregarMetasConfig();
+  renderHistorico();
+  calcularTudo(false, true);
+</script>
+</body>
+</html>
