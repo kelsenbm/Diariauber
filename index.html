@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Diária do Motorista</title>
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Diária Motorista">
+<link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2085/2085290.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0d0f14">
+
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -15,7 +23,7 @@
     --accent2: #ff6b35;
     --uber: #000000;
     --uber-text: #ffffff;
-    --pop: #facc15; /* Amarelo 99 Pop */
+    --pop: #facc15;
     --pop-text: #000000;
     --text: #e8eaf0;
     --muted: #6b7280;
@@ -25,483 +33,101 @@
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Mono', monospace; min-height: 100vh; padding: 0 0 40px; }
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    min-height: 100vh;
-    padding: 0 0 80px;
-  }
-
-  /* HEADER */
   header {
     background: linear-gradient(135deg, #0d0f14 0%, #161a24 100%);
     border-bottom: 1px solid var(--border);
     padding: 24px 20px 20px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    backdrop-filter: blur(12px);
+    position: sticky; top: 0; z-index: 100; backdrop-filter: blur(12px);
   }
-
-  .header-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 6px;
-  }
-
-  .logo {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 20px;
-    letter-spacing: -0.5px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .logo-dot {
-    width: 8px;
-    height: 8px;
-    background: var(--accent);
-    border-radius: 50%;
-    animation: pulse 2s infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(0.8); }
-  }
-
-  .date-display {
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-
-  .reset-btn {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    padding: 6px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s;
-    letter-spacing: 0.5px;
-  }
-
-  .reset-btn:hover {
-    border-color: var(--danger);
-    color: var(--danger);
-  }
-
-  /* MAIN */
-  main {
-    max-width: 520px;
-    margin: 0 auto;
-    padding: 20px 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  /* CARDS */
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    animation: fadeUp 0.4s ease both;
-  }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .card-title {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 11px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .card-title span {
-    font-size: 16px;
-  }
-
-  /* TIME CARD */
-  .time-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 12px;
-  }
-
-  .time-result {
-    background: var(--surface2);
-    border-radius: 10px;
-    padding: 14px;
-    text-align: center;
-    border: 1px solid var(--border);
-  }
-
-  .time-result-label {
-    font-size: 10px;
-    color: var(--muted);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin-bottom: 4px;
-  }
-
-  .time-result-value {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 22px;
-    color: var(--accent);
-  }
-
-  /* INPUTS */
-  label {
-    display: block;
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 0.5px;
-    margin-bottom: 5px;
-    text-transform: uppercase;
-  }
-
-  input[type="time"],
-  input[type="number"],
-  input[type="text"] {
-    width: 100%;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 11px 14px;
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    font-size: 15px;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    -webkit-appearance: none;
-  }
-
-  input:focus {
-    outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(0, 229, 160, 0.1);
-  }
-
-  input:disabled {
-    background: rgba(255, 255, 255, 0.03);
-    color: var(--muted);
-    border-color: rgba(255, 255, 255, 0.05);
-  }
-
-  input::placeholder { color: #3a3f50; }
-
-  .input-group {
-    margin-bottom: 12px;
-  }
-
-  .input-prefix {
-    position: relative;
-  }
-
-  .input-prefix input {
-    padding-left: 34px;
-  }
-
-  .prefix-label {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--muted);
-    font-size: 13px;
-    pointer-events: none;
-  }
-
-  /* CORRIDAS GRID */
-  .corridas-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-
-  .app-box {
-    background: var(--surface2);
-    border-radius: 10px;
-    padding: 14px;
-    border: 1px solid var(--border);
-  }
-
-  .app-label {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    margin-bottom: 10px;
-  }
-
-  .app-badge {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 11px;
-    padding: 3px 8px;
-    border-radius: 4px;
-    letter-spacing: 0.5px;
-  }
-
-  .uber-badge {
-    background: #ffffff;
-    color: #000000;
-  }
-
-  .pop-badge {
-    background: var(--pop);
-    color: var(--pop-text);
-  }
-
-  .app-total {
-    font-size: 10px;
-    color: var(--muted);
-    margin-top: 8px;
-  }
-
-  .app-total strong {
-    color: var(--text);
-    font-size: 12px;
-  }
-
-  /* GASTOS */
-  .gasto-item {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-  }
-
-  .gasto-item label {
-    margin-bottom: 0;
-  }
-
-  .gastos-total-bar {
-    background: var(--surface2);
-    border-radius: 8px;
-    padding: 12px 14px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 4px;
-    border: 1px solid var(--border);
-  }
-
-  .gastos-total-bar .label { color: var(--muted); font-size: 11px; margin: 0; }
-  .gastos-total-bar .val {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 18px;
-    color: var(--danger);
-  }
-
-  /* KM / CONSUMO */
-  .km-grid-3 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 12px;
-  }
+  .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px; display: flex; align-items: center; gap: 8px; }
+  .logo-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; }
+  .reset-btn { background: transparent; border: 1px solid var(--border); color: var(--muted); font-family: 'DM Mono', monospace; font-size: 11px; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
+  .reset-btn:hover { border-color: var(--danger); color: var(--danger); }
   
-  .km-grid-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
+  .date-picker-group { display: flex; align-items: center; gap: 8px; margin-top: 8px; background: var(--surface2); padding: 8px; border-radius: 8px; border: 1px solid var(--border); }
+  .date-picker-group label { margin-bottom: 0; font-size: 10px; white-space: nowrap; }
+  .date-picker-group input[type="date"] { background: transparent; border: none; color: var(--text); font-family: 'DM Mono', monospace; font-size: 14px; outline: none; width: 100%; }
 
-  .km-result {
-    background: var(--surface2);
-    border-radius: 10px;
-    padding: 12px 14px;
-    border: 1px solid var(--border);
-    margin-top: 12px;
-  }
+  main { max-width: 520px; margin: 0 auto; padding: 20px 16px; display: flex; flex-direction: column; gap: 16px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
+  .card-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .card-title span { font-size: 16px; }
 
-  .km-result-label {
-    font-size: 10px;
-    color: var(--muted);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
+  /* METAS E PROGRESSO */
+  .meta-row { margin-bottom: 14px; }
+  .meta-info { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px; }
+  .meta-label { color: var(--muted); }
+  .meta-values { font-weight: bold; }
+  .progress-bg { background: var(--surface2); height: 8px; border-radius: 4px; border: 1px solid var(--border); overflow: hidden; }
+  .progress-bar { background: var(--accent); height: 100%; width: 0%; transition: width 0.4s ease; }
+  .meta-input-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 12px; }
 
-  .km-result-value {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 20px;
-    color: var(--accent2);
-    margin-top: 2px;
-  }
+  /* CRONOMETRO HORA PARADA */
+  .cron-container { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-top: 14px; }
+  .cron-header { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--muted); margin-bottom: 8px; }
+  .cron-display { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: bold; color: var(--danger); text-align: center; margin: 6px 0; }
+  .cron-actions { display: flex; gap: 8px; }
+  .cron-btn { flex: 1; padding: 8px; font-family: 'DM Mono', monospace; font-size: 12px; border-radius: 6px; border: 1px solid var(--border); cursor: pointer; background: var(--surface); color: var(--text); }
+  .cron-btn.active { background: var(--danger); color: #000; border-color: var(--danger); font-weight: bold; }
+  .cron-btn.resume { background: var(--accent); color: #000; border-color: var(--accent); font-weight: bold; }
 
-  /* RESUMO FINAL */
-  .resumo-card {
-    background: linear-gradient(135deg, #0f1a14 0%, #0d1520 100%);
-    border: 1px solid rgba(0, 229, 160, 0.25);
-    border-radius: var(--radius);
-    padding: 22px;
-    position: relative;
-    overflow: hidden;
-  }
+  /* GRIDS E INPUTS */
+  .time-grid, .corridas-grid, .km-grid-3, .km-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .km-grid-3 { grid-template-columns: 1fr 1fr; }
+  .time-result, .km-result { background: var(--surface2); border-radius: 10px; padding: 14px; text-align: center; border: 1px solid var(--border); }
+  .time-result-label, .km-result-label { font-size: 10px; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; }
+  .time-result-value, .km-result-value { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 18px; color: var(--accent); }
+  
+  label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 5px; text-transform: uppercase; }
+  input[type="time"], input[type="number"], input[type="text"] { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 11px 14px; color: var(--text); font-family: 'DM Mono', monospace; font-size: 15px; }
+  input:focus { outline: none; border-color: var(--accent); }
+  .input-prefix { position: relative; }
+  .input-prefix input { padding-left: 34px; }
+  .prefix-label { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 13px; }
 
-  .resumo-title {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 13px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 18px;
-  }
+  .app-box { background: var(--surface2); border-radius: 10px; padding: 14px; border: 1px solid var(--border); }
+  .app-badge { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 11px; padding: 3px 8px; border-radius: 4px; }
+  .uber-badge { background: #fff; color: #000; }
+  .pop-badge { background: var(--pop); color: var(--pop-text); }
+  .app-total { font-size: 10px; color: var(--muted); margin-top: 8px; }
+  .app-total strong { color: var(--text); font-size: 12px; }
 
-  .resumo-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    padding: 9px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-  }
+  .gasto-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .gastos-total-bar { background: var(--surface2); border-radius: 8px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); }
+  .gastos-total-bar .val { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 18px; color: var(--danger); }
 
-  .resumo-row:last-of-type { border-bottom: none; }
+  /* RESUMO E DIÁRIA */
+  .resumo-card { background: linear-gradient(135deg, #0f1a14 0%, #0d1520 100%); border: 1px solid rgba(0, 229, 160, 0.25); border-radius: var(--radius); padding: 22px; }
+  .resumo-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 13px; color: var(--accent); margin-bottom: 18px; text-transform: uppercase; }
+  .resumo-row { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; }
+  .lucro-box { background: rgba(0, 229, 160, 0.08); border: 1px solid rgba(0, 229, 160, 0.2); border-radius: 10px; padding: 16px; margin-top: 14px; text-align: center; }
+  .lucro-label { font-size: 11px; color: var(--accent); text-transform: uppercase; }
+  .lucro-value { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 36px; }
+  
+  .export-btn, .save-btn { width: 100%; border: none; border-radius: 10px; padding: 14px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
+  .export-btn { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .save-btn { background: var(--accent); color: #000; font-size: 14px; margin-top: 15px; }
 
-  .resumo-row .r-label {
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 0.5px;
-  }
+  /* HISTÓRICO LISTA */
+  .hist-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+  .hist-meta { font-size: 12px; }
+  .hist-date { font-weight: bold; color: var(--accent); }
+  .hist-stats { color: var(--muted); font-size: 11px; margin-top: 4px; }
+  .hist-value { font-family: 'Syne', sans-serif; font-weight: bold; font-size: 16px; text-align: right; }
+  .del-hist { background: none; border: none; color: var(--danger); font-size: 16px; cursor: pointer; padding-left: 12px; }
 
-  .resumo-row .r-val {
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 15px;
-  }
-
-  .r-green { color: var(--accent); }
-  .r-red { color: var(--danger); }
-  .r-orange { color: var(--accent2); }
-  .r-white { color: var(--text); }
-
-  .lucro-box {
-    background: rgba(0, 229, 160, 0.08);
-    border: 1px solid rgba(0, 229, 160, 0.2);
-    border-radius: 10px;
-    padding: 16px;
-    margin-top: 14px;
-    text-align: center;
-  }
-
-  .lucro-label {
-    font-size: 11px;
-    color: var(--accent);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 4px;
-  }
-
-  .lucro-value {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 36px;
-    letter-spacing: -1px;
-  }
-
-  .lucro-neg { color: var(--danger) !important; }
-  .lucro-pos { color: var(--accent) !important; }
-
-  /* EXPORT BTN */
-  .export-btn {
-    width: 100%;
-    background: var(--accent);
-    color: #000;
-    border: none;
-    border-radius: 10px;
-    padding: 15px;
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 14px;
-    letter-spacing: 1px;
-    cursor: pointer;
-    transition: all 0.2s;
-    margin-top: 14px;
-    text-transform: uppercase;
-  }
-
-  .export-btn:hover {
-    background: #00c98a;
-    transform: translateY(-1px);
-    box-shadow: 0 8px 24px rgba(0,229,160,0.25);
-  }
-
-  /* TOAST */
-  .toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: var(--surface2);
-    border: 1px solid var(--accent);
-    color: var(--accent);
-    font-size: 13px;
-    padding: 12px 22px;
-    border-radius: 30px;
-    opacity: 0;
-    transition: all 0.3s;
-    pointer-events: none;
-    z-index: 999;
-  }
-
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--surface2); border: 1px solid var(--accent); color: var(--accent); font-size: 13px; padding: 12px 22px; border-radius: 30px; opacity: 0; transition: all 0.3s; pointer-events: none; z-index: 999; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  .divider { height: 1px; background: var(--border); margin: 4px 0 12px; }
-  .section-add { display: flex; gap: 8px; margin-top: 10px; }
-  .section-add input { flex: 1; }
+  .divider { height: 1px; background: var(--border); margin: 12px 0; }
+  .section-add { display: flex; gap: 8px; }
+  .add-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--accent); font-size: 20px; width: 44px; border-radius: 8px; cursor: pointer; }
+  .extra-gasto { display: flex; justify-content: space-between; align-items: center; background: var(--surface2); border-radius: 8px; padding: 9px 12px; margin-top: 6px; border: 1px solid var(--border); font-size: 13px; }
+  .extra-gasto button { background: none; border: none; color: var(--muted); cursor: pointer; }
 
-  .add-btn {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    color: var(--accent);
-    font-size: 20px;
-    width: 44px;
-    border-radius: 8px;
-    cursor: pointer;
-    flex-shrink: 0;
-  }
-
-  .extra-gasto-list { margin-top: 8px; }
-  .extra-gasto {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: var(--surface2);
-    border-radius: 8px;
-    padding: 9px 12px;
-    margin-bottom: 6px;
-    border: 1px solid var(--border);
-    font-size: 13px;
-  }
-  .extra-gasto .eg-del { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; padding-left: 10px; }
-
-  @media (max-width: 400px) {
-    .corridas-grid, .km-grid-2, .km-grid-3, .time-grid { grid-template-columns: 1fr; }
-  }
+  @media (max-width: 400px) { .corridas-grid, .km-grid-2, .km-grid-3, .time-grid { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -512,32 +138,93 @@
       <div class="logo-dot"></div>
       <span>Diária do Motorista</span>
     </div>
-    <button class="reset-btn" onclick="resetTudo()">↺ Resetar</button>
+    <button class="reset-btn" onclick="resetTudo()">↺ Limpar Tela</button>
   </div>
-  <div class="date-display" id="dateDisplay"></div>
+  <div class="date-picker-group">
+    <label>📅 DATA DO TRABALHO:</label>
+    <input type="date" id="dataTrabalho" onchange="atualizarMetasVisuais()">
+  </div>
 </header>
 
 <main>
 
   <div class="card">
-    <div class="card-title"><span>🕐</span> Horário de Trabalho</div>
+    <div class="card-title"><span>🎯</span> Painel de Metas Financeiras</div>
+    
+    <div class="meta-row">
+      <div class="meta-info">
+        <span class="meta-label">Progresso do Dia</span>
+        <span class="meta-values" id="metaDiaTexto">R$ 0,00 / R$ 0,00</span>
+      </div>
+      <div class="progress-bg"><div class="progress-bar" id="barraDia"></div></div>
+    </div>
+
+    <div class="meta-row">
+      <div class="meta-info">
+        <span class="meta-label">Progresso da Semana (Líquido)</span>
+        <span class="meta-values" id="metaSemanaTexto">R$ 0,00 / R$ 0,00</span>
+      </div>
+      <div class="progress-bg"><div class="progress-bar" id="barraSemana" style="background:var(--accent2)"></div></div>
+    </div>
+
+    <div class="meta-row" style="margin-bottom:0">
+      <div class="meta-info">
+        <span class="meta-label">Progresso do Mês (Líquido)</span>
+        <span class="meta-values" id="metaMesTexto">R$ 0,00 / R$ 0,00</span>
+      </div>
+      <div class="progress-bg"><div class="progress-bar" id="barraMes" style="background:#54a0ff"></div></div>
+    </div>
+
+    <div class="divider"></div>
+    <label style="font-size:10px; color:var(--muted)">Ajustar Alvos de Metas (R$):</label>
+    <div class="meta-input-grid">
+      <div>
+        <label style="font-size:9px">Meta Dia</label>
+        <input type="number" id="alvoDia" value="300" oninput="salvarMetasConfig(); atualizarMetasVisuais()">
+      </div>
+      <div>
+        <label style="font-size:9px">Meta Semana</label>
+        <input type="number" id="alvoSemana" value="1500" oninput="salvarMetasConfig(); atualizarMetasVisuais()">
+      </div>
+      <div>
+        <label style="font-size:9px">Meta Mês</label>
+        <input type="number" id="alvoMes" value="6000" oninput="salvarMetasConfig(); atualizarMetasVisuais()">
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span>🕐</span> Registro de Tempo</div>
     <div class="time-grid">
       <div class="input-group">
-        <label>Início</label>
+        <label>Hora Inicial</label>
         <input type="time" id="horaInicio" oninput="calcularTudo()">
       </div>
       <div class="input-group">
-        <label>Término</label>
+        <label>Hora Final</label>
         <input type="time" id="horaFim" oninput="calcularTudo()">
       </div>
     </div>
-    <div class="time-grid">
+
+    <div class="cron-container">
+      <div class="cron-header">
+        <span>🛑 CRONÔMETRO DE HORA PARADA</span>
+        <span id="cronStatus" style="color:var(--muted)">Desativado</span>
+      </div>
+      <div class="cron-display" id="cronTime">00:00:00</div>
+      <div class="cron-actions">
+        <button class="cron-btn active" id="btnPausarTrab" onclick="alternarCronometro(true)">Pausar Trabalho</button>
+        <button class="cron-btn" id="btnVoltarTrab" onclick="alternarCronometro(false)" disabled>Retomar Rua</button>
+      </div>
+    </div>
+
+    <div class="time-grid" style="margin-top:14px">
       <div class="time-result">
-        <div class="time-result-label">Horas trabalhadas</div>
+        <div class="time-result-label">Tempo de Turno Total</div>
         <div class="time-result-value" id="horasTrabalhadas">—</div>
       </div>
       <div class="time-result">
-        <div class="time-result-label">Ganho por hora</div>
+        <div class="time-result-label">Ganho p/ Hora Líquida</div>
         <div class="time-result-value" id="ganhoPorHora">—</div>
       </div>
     </div>
@@ -547,36 +234,26 @@
     <div class="card-title"><span>🚗</span> Corridas</div>
     <div class="corridas-grid">
       <div class="app-box">
-        <div class="app-label">
-          <span class="app-badge uber-badge">UBER</span>
-        </div>
-        <div class="input-group">
+        <div class="app-label"><span class="app-badge uber-badge">UBER</span></div>
+        <div class="input-group" style="margin-bottom:8px">
           <label>Nº Corridas</label>
           <input type="number" id="uberCorridas" placeholder="0" oninput="calcularTudo()">
         </div>
         <div class="input-group" style="margin-bottom:0">
           <label>Ganho (R$)</label>
-          <div class="input-prefix">
-            <span class="prefix-label">R$</span>
-            <input type="number" id="uberGanho" placeholder="0,00" step="0.01" oninput="calcularTudo()">
-          </div>
+          <div class="input-prefix"><span class="prefix-label">R$</span><input type="number" id="uberGanho" placeholder="0,00" step="0.01" oninput="calcularTudo()"></div>
         </div>
         <div class="app-total">Média: <strong id="uberMedia">—</strong></div>
       </div>
       <div class="app-box">
-        <div class="app-label">
-          <span class="app-badge pop-badge">99 POP</span>
-        </div>
-        <div class="input-group">
+        <div class="app-label"><span class="app-badge pop-badge">99 POP</span></div>
+        <div class="input-group" style="margin-bottom:8px">
           <label>Nº Corridas</label>
           <input type="number" id="popCorridas" placeholder="0" oninput="calcularTudo()">
         </div>
         <div class="input-group" style="margin-bottom:0">
           <label>Ganho (R$)</label>
-          <div class="input-prefix">
-            <span class="prefix-label">R$</span>
-            <input type="number" id="popGanho" placeholder="0,00" step="0.01" oninput="calcularTudo()">
-          </div>
+          <div class="input-prefix"><span class="prefix-label">R$</span><input type="number" id="popGanho" placeholder="0,00" step="0.01" oninput="calcularTudo()"></div>
         </div>
         <div class="app-total">Média: <strong id="popMedia">—</strong></div>
       </div>
@@ -585,37 +262,34 @@
 
   <div class="card">
     <div class="card-title"><span>📍</span> Quilometragem & Consumo</div>
-    <div class="km-grid-3">
-      <div class="input-group">
+    <div class="km-grid-3" style="margin-bottom:12px">
+      <div>
         <label>KM Inicial</label>
         <input type="number" id="kmInicial" placeholder="Ex: 45000" oninput="calcularKmPorOdometro()">
       </div>
-      <div class="input-group">
+      <div>
         <label>KM Final</label>
         <input type="number" id="kmFinal" placeholder="Ex: 45220" oninput="calcularKmPorOdometro()">
       </div>
     </div>
     
     <div class="km-grid-2">
-      <div class="input-group">
+      <div>
         <label>KM Rodados do Dia</label>
         <input type="number" id="kmRodados" placeholder="0" step="0.1" oninput="calcularTudo(true)">
       </div>
-      <div class="input-group">
+      <div>
         <label>Média Painel (km/L)</label>
         <input type="number" id="mediaPainel" placeholder="Ex: 10.5" step="0.1" oninput="calcularTudo()">
       </div>
     </div>
 
     <div class="km-grid-2" style="margin-top: 12px;">
-      <div class="input-group" style="margin-bottom:0">
+      <div>
         <label>Preço do Litro (R$)</label>
-        <div class="input-prefix">
-          <span class="prefix-label">R$</span>
-          <input type="number" id="precoCombustivel" placeholder="0,00" step="0.01" oninput="calcularTudo()">
-        </div>
+        <div class="input-prefix"><span class="prefix-label">R$</span><input type="number" id="precoCombustivel" placeholder="0,00" step="0.01" oninput="calcularTudo()"></div>
       </div>
-      <div class="km-result" style="margin-top:0">
+      <div class="km-result">
         <div class="km-result-label">Litros Consumidos</div>
         <div class="km-result-value" id="litrosCalculados">— L</div>
       </div>
@@ -624,95 +298,49 @@
 
   <div class="card">
     <div class="card-title"><span>💸</span> Gastos do Dia</div>
-
-    <div class="gasto-item">
-      <label>⛽ Combustível</label>
-      <div class="input-prefix" style="width:160px">
-        <span class="prefix-label">R$</span>
-        <input type="number" id="gastoCombustivel" placeholder="0,00" step="0.01" oninput="calcularTudo()">
-      </div>
-    </div>
-
-    <div class="gasto-item">
-      <label>🍽️ Alimentação</label>
-      <div class="input-prefix" style="width:160px">
-        <span class="prefix-label">R$</span>
-        <input type="number" id="gastoAlimentacao" placeholder="0,00" step="0.01" oninput="calcularTudo()">
-      </div>
-    </div>
-
-    <div class="gasto-item">
-      <label>🅿️ Estacionamento</label>
-      <div class="input-prefix" style="width:160px">
-        <span class="prefix-label">R$</span>
-        <input type="number" id="gastoEstacionamento" placeholder="0,00" step="0.01" oninput="calcularTudo()">
-      </div>
-    </div>
+    <div class="gasto-item"><label>⛽ Combustível</label><div class="input-prefix" style="width:160px"><span class="prefix-label">R$</span><input type="number" id="gastoCombustivel" placeholder="0,00" oninput="calcularTudo()"></div></div>
+    <div class="gasto-item"><label>🍽️ Alimentação</label><div class="input-prefix" style="width:160px"><span class="prefix-label">R$</span><input type="number" id="gastoAlimentacao" placeholder="0,00" oninput="calcularTudo()"></div></div>
+    <div class="gasto-item"><label>🅿️ Estacionamento</label><div class="input-prefix" style="width:160px"><span class="prefix-label">R$</span><input type="number" id="gastoEstacionamento" placeholder="0,00" oninput="calcularTudo()"></div></div>
 
     <div class="divider"></div>
-    <label style="margin-bottom:8px">+ Outro gasto</label>
+    <label style="margin-bottom:8px">+ Adicionar Gasto Extra</label>
     <div class="section-add">
-      <input type="text" id="outroNome" placeholder="Descrição...">
-      <div class="input-prefix" style="width:130px">
-        <span class="prefix-label">R$</span>
-        <input type="number" id="outroValor" placeholder="0,00" step="0.01">
-      </div>
+      <input type="text" id="outroNome" placeholder="Ex: Lavador, Bala...">
+      <div class="input-prefix" style="width:130px"><span class="prefix-label">R$</span><input type="number" id="outroValor" placeholder="0,00"></div>
       <button class="add-btn" onclick="adicionarGasto()">+</button>
     </div>
-    <div class="extra-gasto-list" id="extraGastos"></div>
+    <div id="extraGastos"></div>
 
     <div class="gastos-total-bar" style="margin-top:14px">
-      <span class="label">TOTAL GASTOS</span>
+      <span style="color:var(--muted); font-size:11px">TOTAL GASTOS</span>
       <span class="val" id="totalGastos">R$ 0,00</span>
     </div>
   </div>
 
   <div class="resumo-card">
-    <div class="resumo-title">📊 Resumo do Dia</div>
-
-    <div class="resumo-row">
-      <span class="r-label">🚗 Total de corridas</span>
-      <span class="r-val r-white" id="r-corridas">0</span>
-    </div>
-    <div class="resumo-row">
-      <span class="r-label">💰 Total bruto (Uber + 99)</span>
-      <span class="r-val r-green" id="r-bruto">R$ 0,00</span>
-    </div>
-    <div class="resumo-row">
-      <span class="r-label">💸 Total gastos</span>
-      <span class="r-val r-red" id="r-gastos">R$ 0,00</span>
-    </div>
-    <div class="resumo-row">
-      <span class="r-label">🏁 KM rodados</span>
-      <span class="r-val r-white" id="r-km">0 km</span>
-    </div>
-    <div class="resumo-row">
-      <span class="r-label">⛽ Litros gastos (Calculado)</span>
-      <span class="r-val r-orange" id="r-consumo">—</span>
-    </div>
-    <div class="resumo-row">
-      <span class="r-label">⏱️ Horas trabalhadas</span>
-      <span class="r-val r-white" id="r-horas">—</span>
-    </div>
-    <div class="resumo-row">
-      <span class="r-label">📈 Ganho por corrida</span>
-      <span class="r-val r-green" id="r-porcorrida">—</span>
-    </div>
-    <div class="resumo-row">
-      <span class="r-label">🛣️ Ganho por KM</span>
-      <span class="r-val r-green" id="r-porKm">—</span>
-    </div>
-    <div class="resumo-row">
-      <span class="r-label">⚡ Ganho por hora</span>
-      <span class="r-val r-green" id="r-porhora">—</span>
-    </div>
+    <div class="resumo-title">📊 Resumo Final Calculado</div>
+    <div class="resumo-row"><span style="color:var(--muted)">🚗 Corridas Executadas</span><span style="font-weight:bold" id="r-corridas">0</span></div>
+    <div class="resumo-row"><span style="color:var(--muted)">💰 Faturamento Bruto</span><span style="color:var(--accent); font-weight:bold;" id="r-bruto">R$ 0,00</span></div>
+    <div class="resumo-row"><span style="color:var(--muted)">💸 Despesas Totais</span><span style="color:var(--danger); font-weight:bold;" id="r-gastos">R$ 0,00</span></div>
+    <div class="resumo-row"><span style="color:var(--muted)">🏁 KM Percorrido</span><span id="r-km">0 km</span></div>
+    <div class="resumo-row"><span style="color:var(--muted)">⛽ Combustível Estimado</span><span style="color:var(--accent2)" id="r-consumo">—</span></div>
+    <div class="resumo-row"><span style="color:var(--muted)">⏱️ Duração do Turno</span><span id="r-horas">—</span></div>
+    <div class="resumo-row"><span style="color:var(--muted)">📈 Média por Corrida</span><span style="color:var(--accent)" id="r-porcorrida">—</span></div>
+    <div class="resumo-row"><span style="color:var(--muted)">🛣️ Lucratividade por KM</span><span style="color:var(--accent)" id="r-porKm">—</span></div>
+    <div class="resumo-row"><span style="color:var(--muted)">⚡ Rendimento por Hora</span><span style="color:var(--accent)" id="r-porhora">—</span></div>
 
     <div class="lucro-box">
-      <div class="lucro-label">Lucro Líquido</div>
-      <div class="lucro-value lucro-pos" id="lucroLiquido">R$ 0,00</div>
+      <div class="lucro-label">LUCRO LÍQUIDO REAL</div>
+      <div class="lucro-value" id="lucroLiquido" style="color:var(--accent)">R$ 0,00</div>
     </div>
 
-    <button class="export-btn" onclick="exportarResumo()">📋 Copiar Resumo do Dia</button>
+    <button class="save-btn" onclick="salvarDiariaNoHistorico()">💾 Salvar Diária no Histórico</button>
+    <button class="export-btn" onclick="exportarResumo()">📋 Copiar Texto Resumo</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span>📜</span> Histórico de Diárias Salvas</div>
+    <div id="listaHistorico"></div>
   </div>
 
 </main>
@@ -720,25 +348,68 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  const dateDisplay = document.getElementById('dateDisplay');
-  const now = new Date();
-  const dias = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
-  const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-  dateDisplay.textContent = `${dias[now.getDay()]} , ${now.getDate()} ${meses[now.getMonth()]} ${now.getFullYear()}`;
+  // Inicialização de Data Padrão (Hoje)
+  const campoData = document.getElementById('dataTrabalho');
+  const dHoje = new Date();
+  campoData.value = dHoje.toISOString().split('T')[0];
 
   let extraGastos = [];
+  let historico = JSON.parse(localStorage.getItem('motorista_historico')) || [];
+  
+  // Cronometro Hora Parada
+  let cronSegundos = 0;
+  let cronInterval = null;
+  let cronRodando = false;
 
   function fmt(n) { return 'R$ ' + n.toFixed(2).replace('.', ','); }
   function showToast(msg) {
-    const toast = document.getElementById('toast');
-    toast.textContent = msg; toast.classList.add('show');
-    setTimeout(() => { toast.classList.remove('show'); }, 3000);
+    const toast = document.getElementById('toast'); toast.textContent = msg; toast.classList.add('show');
+    setTimeout(() => { toast.classList.remove('show'); }, 2500);
+  }
+
+  function carregarMetasConfig() {
+    if(localStorage.getItem('alvoDia')) document.getElementById('alvoDia').value = localStorage.getItem('alvoDia');
+    if(localStorage.getItem('alvoSemana')) document.getElementById('alvoSemana').value = localStorage.getItem('alvoSemana');
+    if(localStorage.getItem('alvoMes')) document.getElementById('alvoMes').value = localStorage.getItem('alvoMes');
+  }
+  function salvarMetasConfig() {
+    localStorage.setItem('alvoDia', document.getElementById('alvoDia').value);
+    localStorage.setItem('alvoSemana', document.getElementById('alvoSemana').value);
+    localStorage.setItem('alvoMes', document.getElementById('alvoMes').value);
+  }
+
+  function alternarCronometro(pausarTrabalho) {
+    if (pausarTrabalho) {
+      document.getElementById('btnPausarTrab').classList.remove('active');
+      document.getElementById('btnPausarTrab').disabled = true;
+      document.getElementById('btnVoltarTrab').classList.add('resume');
+      document.getElementById('btnVoltarTrab').disabled = false;
+      document.getElementById('cronStatus').textContent = "Trabalho Pausado";
+      document.getElementById('cronStatus').style.color = "var(--danger)";
+      
+      cronInterval = setInterval(() => {
+        cronSegundos++;
+        let h = Math.floor(cronSegundos / 3600).toString().padStart(2, '0');
+        let m = Math.floor((cronSegundos % 3600) / 60).toString().padStart(2, '0');
+        let s = (cronSegundos % 60).toString().padStart(2, '0');
+        document.getElementById('cronTime').textContent = `${h}:${m}:${s}`;
+        calcularTudo();
+      }, 1000);
+    } else {
+      document.getElementById('btnVoltarTrab').classList.remove('resume');
+      document.getElementById('btnVoltarTrab').disabled = true;
+      document.getElementById('btnPausarTrab').classList.add('active');
+      document.getElementById('btnPausarTrab').disabled = false;
+      document.getElementById('cronStatus').textContent = "Rodando na Rua";
+      document.getElementById('cronStatus').style.color = "var(--accent)";
+      
+      clearInterval(cronInterval);
+    }
   }
 
   function calcularKmPorOdometro() {
     const kmIni = parseFloat(document.getElementById('kmInicial').value) || 0;
     const kmFim = parseFloat(document.getElementById('kmFinal').value) || 0;
-    
     if (kmFim >= kmIni && kmIni > 0) {
       document.getElementById('kmRodados').value = (kmFim - kmIni).toFixed(1);
     }
@@ -751,25 +422,24 @@
       document.getElementById('kmFinal').value = '';
     }
 
-    // Horários
     const ini = document.getElementById('horaInicio').value;
     const fim = document.getElementById('horaFim').value;
-    let horasTrab = null;
+    let horasTurnoBruto = 0;
 
     if (ini && fim) {
       const [h1, m1] = ini.split(':').map(Number);
       const [h2, m2] = fim.split(':').map(Number);
       let minutos = (h2 * 60 + m2) - (h1 * 60 + m1);
       if (minutos < 0) minutos += 24 * 60;
-      const hh = Math.floor(minutos / 60);
-      const mm = minutos % 60;
-      horasTrab = minutos / 60;
+      horasTurnoBruto = minutos / 60;
+      
+      let hh = Math.floor(minutos / 60);
+      let mm = minutos % 60;
       document.getElementById('horasTrabalhadas').textContent = `${hh}h${mm.toString().padStart(2,'0')}m`;
     } else {
       document.getElementById('horasTrabalhadas').textContent = '—';
     }
 
-    // Corridas
     const uberC = parseFloat(document.getElementById('uberCorridas').value) || 0;
     const uberG = parseFloat(document.getElementById('uberGanho').value) || 0;
     const popC  = parseFloat(document.getElementById('popCorridas').value) || 0;
@@ -781,7 +451,6 @@
     const totalCorridas = uberC + popC;
     const totalBruto = uberG + popG;
 
-    // KM & Consumo Dinâmico
     const km = parseFloat(document.getElementById('kmRodados').value) || 0;
     const mediaPainel = parseFloat(document.getElementById('mediaPainel').value) || 0;
     const precoLitro = parseFloat(document.getElementById('precoCombustivel').value) || 0;
@@ -790,133 +459,14 @@
     if (km > 0 && mediaPainel > 0) {
       litrosCalculados = km / mediaPainel;
       document.getElementById('litrosCalculados').textContent = litrosCalculados.toFixed(2) + ' L';
-      
-      // Auto-calcula o preço do combustível se o valor do litro existir
       if (precoLitro > 0) {
-        const custoCombustivelAuto = litrosCalculados * precoLitro;
-        document.getElementById('gastoCombustivel').value = custoCombustivelAuto.toFixed(2);
+        document.getElementById('gastoCombustivel').value = (litrosCalculados * precoLitro).toFixed(2);
       }
     } else {
       document.getElementById('litrosCalculados').textContent = '— L';
     }
 
-    // Gastos totais
     const g1 = parseFloat(document.getElementById('gastoCombustivel').value) || 0;
     const g2 = parseFloat(document.getElementById('gastoAlimentacao').value) || 0;
     const g3 = parseFloat(document.getElementById('gastoEstacionamento').value) || 0;
     const gExtras = extraGastos.reduce((a, b) => a + b.val, 0);
-    const totalGastos = g1 + g2 + g3 + gExtras;
-
-    document.getElementById('totalGastos').textContent = fmt(totalGastos);
-
-    // Ganho por hora
-    let ganhoPorHora = null;
-    if (horasTrab && horasTrab > 0 && totalBruto > 0) {
-      ganhoPorHora = totalBruto / horasTrab;
-      document.getElementById('ganhoPorHora').textContent = fmt(ganhoPorHora) + '/h';
-    } else {
-      document.getElementById('ganhoPorHora').textContent = '—';
-    }
-
-    // Lucro líquido
-    const lucro = totalBruto - totalGastos;
-    const lucroEl = document.getElementById('lucroLiquido');
-    lucroEl.textContent = (lucro < 0 ? '-' : '') + fmt(Math.abs(lucro));
-    lucroEl.className = 'lucro-value ' + (lucro >= 0 ? 'lucro-pos' : 'lucro-neg');
-
-    // Resumo Final
-    document.getElementById('r-corridas').textContent = totalCorridas;
-    document.getElementById('r-bruto').textContent = fmt(totalBruto);
-    document.getElementById('r-gastos').textContent = fmt(totalGastos);
-    document.getElementById('r-km').textContent = km > 0 ? km.toFixed(1) + ' km' : '0 km';
-    document.getElementById('r-consumo').textContent = litrosCalculados > 0 ? litrosCalculados.toFixed(1) + ' L' : '—';
-    document.getElementById('r-horas').textContent = document.getElementById('horasTrabalhadas').textContent;
-    document.getElementById('r-porcorrida').textContent = totalCorridas > 0 ? fmt(totalBruto / totalCorridas) : '—';
-    document.getElementById('r-porhora').textContent = ganhoPorHora ? fmt(ganhoPorHora) + '/h' : '—';
-    document.getElementById('r-porKm').textContent = km > 0 ? fmt(totalBruto / km) + '/km' : '—';
-  }
-
-  function adicionarGasto() {
-    const nome = document.getElementById('outroNome').value.trim();
-    const val = parseFloat(document.getElementById('outroValor').value) || 0;
-    if (!nome || val <= 0) { showToast('Preencha descrição e valor'); return; }
-
-    const id = Date.now();
-    extraGastos.push({ id, nome, val });
-    renderExtras();
-    document.getElementById('outroNome').value = '';
-    document.getElementById('outroValor').value = '';
-    calcularTudo();
-  }
-
-  function renderExtras() {
-    const list = document.getElementById('extraGastos');
-    list.innerHTML = extraGastos.map(e => `
-      <div class="extra-gasto">
-        <span>${e.nome}</span>
-        <span style="color:var(--danger)">- ${fmt(e.val)}</span>
-        <button class="eg-del" onclick="removerGasto(${e.id})">✕</button>
-      </div>
-    `).join('');
-  }
-
-  function removerGasto(id) {
-    extraGastos = extraGastos.filter(e => e.id !== id);
-    renderExtras();
-    calcularTudo();
-  }
-
-  function resetTudo() {
-    if (!confirm('Resetar todos os dados do dia?')) return;
-    document.querySelectorAll('input').forEach(i => i.value = '');
-    extraGastos = [];
-    renderExtras();
-    calcularTudo();
-    showToast('Dados resetados ✓');
-  }
-
-  function exportarResumo() {
-    const ini = document.getElementById('horaInicio').value || '—';
-    const fim = document.getElementById('horaFim').value || '—';
-    const horas = document.getElementById('horasTrabalhadas').textContent;
-    const totalC = document.getElementById('r-corridas').textContent;
-    const bruto = document.getElementById('r-bruto').textContent;
-    const gastos = document.getElementById('r-gastos').textContent;
-    const km = document.getElementById('r-km').textContent;
-    const consumo = document.getElementById('r-consumo').textContent;
-    const porcorrida = document.getElementById('r-porcorrida').textContent;
-    const porhora = document.getElementById('r-porhora').textContent;
-    const porKm = document.getElementById('r-porKm').textContent;
-    const lucro = document.getElementById('lucroLiquido').textContent;
-
-    const d = new Date();
-    const dataStr = `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()}`;
-
-    const texto = `🚗 DIÁRIA DO MOTORISTA — ${dataStr}
-━━━━━━━━━━━━━━━━━━━━
-
-⏱ Horário: ${ini} às ${fim} (${horas})
-🚗 Corridas: ${totalC} feitas
-
-📍 KM Rodado: ${km}
-⛽ Combustível Consumido: ${consumo}
-
-💰 Ganho Bruto: ${bruto}
-💸 Total Gastos: ${gastos}
-━━━━━━━━━━━━━━━━━━━━
-
-📈 Ganho por Corrida: ${porcorrida}
-⚡ Ganho por Hora: ${porhora}
-🛣️ Ganho por KM: ${porKm}
-
-✅ LUCRO LÍQUIDO: ${lucro}`;
-
-    const textarea = document.createElement('textarea');
-    textarea.value = texto; document.body.appendChild(textarea);
-    textarea.select();
-    try { document.execCommand('copy'); showToast('Resumo copiado! ✓'); } catch (err) { showToast('Erro ao copiar'); }
-    document.body.removeChild(textarea);
-  }
-</script>
-</body>
-</html>
