@@ -24,7 +24,7 @@
     --uber: #000000;
     --uber-text: #ffffff;
     --pop: #facc15; /* Amarelo 99 Pop */
-    --pop-text: #000000; /* Texto preto para o amarelo */
+    --pop-text: #000000; 
     --text: #e8eaf0;
     --muted: #6b7280;
     --danger: #ff4757;
@@ -65,9 +65,9 @@
   .progress-bar { background: var(--accent); height: 100%; width: 0%; transition: width 0.4s ease; }
   .meta-input-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 12px; }
 
-  /* NOVO PAINEL DO CRONÔMETRO DIGITAL */
-  .jornada-master-btn { width: 100%; padding: 16px; border: none; border-radius: 10px; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 14px; text-transform: uppercase; cursor: pointer; background: var(--accent); color: #000; transition: all 0.2s; margin-bottom: 12px; }
-  .jornada-master-btn.rodando { background: var(--warn); color: #000; }
+  /* PAINEL DO CRONÔMETRO */
+  .jornada-master-btn { width: 100%; padding: 16px; border: none; border-radius: 10px; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 14px; text-transform: uppercase; cursor: pointer; background: var(--warn); color: #000; transition: all 0.2s; margin-bottom: 12px; }
+  .jornada-master-btn.parado { background: var(--accent); color: #000; }
   .cron-display-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; text-align: center; }
   .cron-box { background: var(--surface2); padding: 10px; border-radius: 8px; border: 1px solid var(--border); }
   .cron-box .lbl { font-size: 9px; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; }
@@ -77,6 +77,7 @@
   
   .cron-sub-actions { display: flex; gap: 10px; }
   .sub-btn { flex: 1; padding: 10px; font-family: 'DM Mono', monospace; font-size: 11px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface2); color: var(--text); cursor: pointer; }
+  .sub-btn:disabled { opacity: 0.4; cursor: not-allowed; }
   .sub-btn.active-pause { border-color: var(--danger); color: var(--danger); font-weight: bold; }
 
   /* GRIDS E INPUTS */
@@ -201,7 +202,7 @@
   <div class="card">
     <div class="card-title"><span>⏱️</span> Controle de Turno</div>
     
-    <button class="jornada-master-btn" id="masterBtn" onclick="gerenciarJornada()">🛫 Iniciar Jornada</button>
+    <button class="jornada-master-btn parado" id="masterBtn" onclick="gerenciarJornada()">🛫 Iniciar Jornada</button>
     
     <div class="cron-display-row">
       <div class="cron-box" id="boxDirecao">
@@ -307,7 +308,7 @@
   <div class="card">
     <div class="card-title"><span>💸</span> Gastos do Dia</div>
     <div class="gasto-item"><label>⛽ Combustível</label><div class="input-prefix" style="width:160px"><span class="prefix-label">R$</span><input type="number" id="gastoCombustivel" placeholder="0,00" oninput="calcularTudo()"></div></div>
-    <div class="gasto-item"><label>🍽️ Alimentação</label><div class="input-prefix" style="width:160px"><span class="prefix-label">R$</span><input type="number" id="gastoAlimentacao" placeholder="0,00" oninput="calcularTudo()"></div></div>
+    <div class="gasto-item"><label>🍽️ Alimentação</label><div class="input-prefix" style="width:160px"><span class="prefix-label">R$</span><input type="number" id="gastoAlimentacao" placeholder="0,00" oninput="grayoutGasto()"></div></div>
     <div class="gasto-item"><label>🅿️ Estacionamento</label><div class="input-prefix" style="width:160px"><span class="prefix-label">R$</span><input type="number" id="gastoEstacionamento" placeholder="0,00" oninput="calcularTudo()"></div></div>
 
     <div class="divider"></div>
@@ -356,20 +357,19 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  // Inicialização de Data Padrão
   const campoData = document.getElementById('dataTrabalho');
   campoData.value = new Date().toISOString().split('T')[0];
 
   let extraGastos = [];
   let historico = JSON.parse(localStorage.getItem('motorista_historico')) || [];
   
-  // Estado dos Cronometros Modernos
-  let statusJornada = "parado"; // parado | rodando | pausado
-  let segundosTurnoBruto = 0; // Tempo total desde o início
-  let segundosParado = 0; // Tempo acumulado em pausa
+  let statusJornada = "parado"; 
+  let segundosTurnoBruto = 0; 
+  let segundosParado = 0; 
   let timerInterval = null;
 
   function fmt(n) { return 'R$ ' + n.toFixed(2).replace('.', ','); }
+  
   function formatarTempo(totalSegundos) {
     let h = Math.floor(totalSegundos / 3600).toString().padStart(2, '0');
     let m = Math.floor((totalSegundos % 3600) / 60).toString().padStart(2, '0');
@@ -387,82 +387,91 @@
     if(localStorage.getItem('alvoSemana')) document.getElementById('alvoSemana').value = localStorage.getItem('alvoSemana');
     if(localStorage.getItem('alvoMes')) document.getElementById('alvoMes').value = localStorage.getItem('alvoMes');
   }
+  
   function salvarMetasConfig() {
     localStorage.setItem('alvoDia', document.getElementById('alvoDia').value);
     localStorage.setItem('alvoSemana', document.getElementById('alvoSemana').value);
     localStorage.setItem('alvoMes', document.getElementById('alvoMes').value);
   }
 
-  // GERENCIADOR DO BOTÃO PRINCIPAL (TAXÍMETRO)
   function gerenciarJornada() {
     const agora = new Date();
     const horaFormatada = agora.getHours().toString().padStart(2, '0') + ':' + agora.getMinutes().toString().padStart(2, '0');
 
     if (statusJornada === "parado") {
-      // INICIAR TRABALHO
       statusJornada = "rodando";
       document.getElementById('horaInicio').value = horaFormatada;
       document.getElementById('horaFim').value = "";
       
-      document.getElementById('masterBtn').textContent = "🛑 Finalizar Jornada";
-      document.getElementById('masterBtn').classList.add('rodando');
+      const masterBtn = document.getElementById('masterBtn');
+      masterBtn.textContent = "🛑 Finalizar Jornada";
+      masterBtn.classList.remove('parado');
+      
       document.getElementById('btnPausaCron').disabled = false;
+      document.getElementById('btnVoltaCron').disabled = true;
       document.getElementById('boxDirecao').classList.add('ativo-dir');
       
       segundosTurnoBruto = 0;
       segundosParado = 0;
 
       timerInterval = setInterval(() => {
-        segundosTurnoBruto++; // O tempo total de turno sempre corre
+        segundosTurnoBruto++; 
         if (statusJornada === "pausado") {
-          segundosParado++; // O tempo parado só corre na pausa
+          segundosParado++; 
         }
         document.getElementById('txtTurnoTotal').textContent = formatarTempo(segundosTurnoBruto);
         document.getElementById('txtTempoParado').textContent = formatarTempo(segundosParado);
         calcularTudo(false, false);
       }, 1000);
 
-      showToast("Jornada Iniciada! Boa sorte na rua! 🛫");
+      showToast("Jornada Iniciada! Boa sorte nas ruas! 🛫");
 
     } else {
-      // FINALIZAR TRABALHO
       if(!confirm("Deseja realmente encerrar a jornada de hoje?")) return;
       statusJornada = "parado";
       document.getElementById('horaFim').value = horaFormatada;
       
       clearInterval(timerInterval);
       
-      document.getElementById('masterBtn').textContent = "🛫 Iniciar Jornada";
-      document.getElementById('masterBtn').classList.remove('rodando');
+      const masterBtn = document.getElementById('masterBtn');
+      masterBtn.textContent = "🛫 Iniciar Jornada";
+      masterBtn.classList.add('parado');
+      
       document.getElementById('btnPausaCron').disabled = true;
-      document.getElementById('btnVoltarCron').disabled = true;
+      document.getElementById('btnVoltaCron').disabled = true;
       document.getElementById('btnPausaCron').classList.remove('active-pause');
       document.getElementById('boxDirecao').classList.remove('ativo-dir');
       document.getElementById('boxParado').classList.remove('ativo-par');
 
-      calcularTudo(false, true); // Força o uso das horas digitadas para cravar o fim
-      showToast("Jornada Encerrada! Veja o resumo abaixo. 🛑");
+      calcularTudo(false, true); 
+      showToast("Jornada Encerrada! Veja o resumo. 🛑");
     }
   }
 
+  // FUNÇÃO DE PAUSA CORRIGIDA E ADAPTADA INTERNAMENTE
   function pausarJornada(devePausar) {
     if (devePausar) {
       statusJornada = "pausado";
+      // Inverte os botões de controle
       document.getElementById('btnPausaCron').disabled = true;
       document.getElementById('btnPausaCron').classList.add('active-pause');
-      document.getElementById('btnVoltarCron').disabled = false;
+      document.getElementById('btnVoltaCron').disabled = false;
+      
       document.getElementById('boxDirecao').classList.remove('ativo-dir');
       document.getElementById('boxParado').classList.add('ativo-par');
-      showToast("Pausa ativada! 🍽️");
+      showToast("Pausa Iniciada! ⏸️");
     } else {
       statusJornada = "rodando";
+      // Inverte os botões de controle de volta
       document.getElementById('btnPausaCron').disabled = false;
       document.getElementById('btnPausaCron').classList.remove('active-pause');
-      document.getElementById('btnVoltarCron').disabled = true;
+      document.getElementById('btnVoltaCron').disabled = true;
+      
       document.getElementById('boxDirecao').classList.add('ativo-dir');
       document.getElementById('boxParado').classList.remove('ativo-par');
-      showToast("De volta à batalha! 🚗💨");
+      showToast("Turno Retomado! 🚗💨");
     }
+    calcularTudo(false, false);
   }
 
   function calcularKmPorOdometro() {
@@ -484,13 +493,11 @@
     let tempoDeTextoExibido = "0h00m";
     let horasDescontoParado = segundosParado / 3600;
 
-    // Decidir se calcula pelo Cronômetro ou pelas Caixas Digitadas
     if (statusJornada !== "parado" && !forcarUsoDosCamposManuais) {
       horasTurnoBrutoCalculo = segundosTurnoBruto / 3600;
       let mTotal = Math.floor(segundosTurnoBruto / 60);
       tempoDeTextoExibido = `${Math.floor(mTotal/60)}h${(mTotal%60).toString().padStart(2,'0')}m`;
     } else {
-      // Cálculo via caixas manuais
       const ini = document.getElementById('horaInicio').value;
       const fim = document.getElementById('horaFim').value;
       if (ini && fim) {
@@ -537,9 +544,8 @@
 
     document.getElementById('totalGastos').textContent = fmt(totalGastos);
 
-    // Tempo Líquido na Direção (Turno Bruto - Tempo Parado)
     let horasLiquidasDirecao = horasTurnoBrutoCalculo - horasDescontoParado;
-    if (horasLiquidasDirecao < 0.05) horasLiquidasDirecao = horasTurnoBrutoCalculo; // Proteção
+    if (horasLiquidasDirecao < 0.05) horasLiquidasDirecao = horasTurnoBrutoCalculo; 
 
     if (horasLiquidasDirecao > 0 && totalBruto > 0) {
       document.getElementById('ganhoPorHora').textContent = fmt(totalBruto / horasLiquidasDirecao) + '/h';
@@ -552,7 +558,6 @@
     lucroEl.textContent = (lucro < 0 ? '-' : '') + fmt(Math.abs(lucro));
     lucroEl.style.color = lucro >= 0 ? 'var(--accent)' : 'var(--danger)';
 
-    // alimentar resumo inferior
     document.getElementById('r-corridas').textContent = totalCorridas;
     document.getElementById('r-bruto').textContent = fmt(totalBruto);
     document.getElementById('r-gastos').textContent = fmt(totalGastos);
@@ -574,7 +579,6 @@
     const alvoSemana = parseFloat(document.getElementById('alvoSemana').value) || 1;
     const alvoMes = parseFloat(document.getElementById('alvoMes').value) || 1;
 
-    // Calcular Lucro Atual da Tela
     const uberG = parseFloat(document.getElementById('uberGanho').value) || 0;
     const popG  = parseFloat(document.getElementById('popGanho').value) || 0;
     const totalBrutoTela = uberG + popG;
@@ -590,7 +594,6 @@
 
     const selDate = new Date(dataSelecionadaStr + 'T12:00:00');
     
-    // Janela semanal
     const inicioSemana = new Date(selDate);
     inicioSemana.setDate(selDate.getDate() - selDate.getDay());
     inicioSemana.setHours(0,0,0,0);
@@ -666,7 +669,7 @@
     historico.sort((a,b) => new Date(b.data) - new Date(a.data));
     localStorage.setItem('motorista_historico', JSON.stringify(historico));
     renderHistorico();
-    calcularTudo(false, true); // Força o uso dos campos manuais para salvar dados corretos
+    calcularTudo(false, true); 
     showToast('Diária salva com sucesso! 💾');
   }
 
@@ -741,10 +744,13 @@
     segundosParado = 0;
     clearInterval(timerInterval);
     statusJornada = "parado";
-    document.getElementById('masterBtn').textContent = "🛫 Iniciar Jornada";
-    document.getElementById('masterBtn').classList.remove('rodando');
+    
+    const masterBtn = document.getElementById('masterBtn');
+    masterBtn.textContent = "🛫 Iniciar Jornada";
+    masterBtn.classList.add('parado');
+    
     document.getElementById('btnPausaCron').disabled = true;
-    document.getElementById('btnVoltarCron').disabled = true;
+    document.getElementById('btnVoltaCron').disabled = true;
     document.getElementById('txtTurnoTotal').textContent = "00:00:00";
     document.getElementById('txtTempoParado').textContent = "00:00:00";
     renderExtras();
@@ -770,7 +776,7 @@
     const parts = campoData.value.split('-');
     const dataStr = `${parts[2]}/${parts[1]}/${parts[0]}`;
 
-    const texto = `🚗 DIÁRIA DO MOTORISTA — ${dataStr}\n━━━━━━━━━━━━━━━━━━━━\n\n⏱️ Horário: ${ini} às ${fim}\n⏱️ Tempo de Trabalho Total: ${horas}\n🚗 Corridas: ${totalC} feitas\n\n📍 KM Rodado: ${km}\n⛽ Combustível Consumido: ${consumo}\n\n💰 Ganho Bruto: ${bruto}\n💸 Total Gastos: ${gastos}\n━━━━━━━━━━━━━━━━━━━━\n\n📈 Ganho por Corrida: ${porcorrida}\n⚡ Rendimento por Hora Líquida: ${porhora}\n🛣️ Ganho por KM: ${porKm}\n\n✅ LUCRO LÍQUIDO: ${lucro}`;
+    const texto = `🚗 DIÁRIA DO MOTORISTA — ${dataStr}\n━━━━━━━━━━━━━━━━━━━━\n\n⏱️ Horário: ${ini} às ${fim}\n⏱️ Tempo de Trabalho Total: ${horas}\n🚗 Corridas: ${totalC} feitas\n\n📍 KM Rodado: ${km}\n⛽ Combustível Consumido: ${consumo}\n\n💰 Ganho Bruto: ${bruto}\n💸 Total Gastos: ${gastos}\n━━━━━━━━━━━━━━━━━━━━\n\n📈 Ganho por Corrida: ${porcorrida}\n⚡ Rendimento por Hora Líquida: ${porhora}\n¼ Ganho por KM: ${porKm}\n\n✅ LUCRO LÍQUIDO: ${lucro}`;
 
     const textarea = document.createElement('textarea'); textarea.value = texto; document.body.appendChild(textarea);
     textarea.select();
@@ -778,7 +784,6 @@
     document.body.removeChild(textarea);
   }
 
-  // Execuções Iniciais
   carregarMetasConfig();
   renderHistorico();
   calcularTudo(false, true);
