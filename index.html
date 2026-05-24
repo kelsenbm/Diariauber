@@ -15,7 +15,8 @@
     --accent2: #ff6b35;
     --uber: #000000;
     --uber-text: #ffffff;
-    --pop: #ff0066;
+    --pop: #facc15; /* Amarelo 99 Pop */
+    --pop-text: #000000;
     --text: #e8eaf0;
     --muted: #6b7280;
     --danger: #ff4757;
@@ -123,13 +124,6 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
-  .card:nth-child(1) { animation-delay: 0.05s; }
-  .card:nth-child(2) { animation-delay: 0.1s; }
-  .card:nth-child(3) { animation-delay: 0.15s; }
-  .card:nth-child(4) { animation-delay: 0.2s; }
-  .card:nth-child(5) { animation-delay: 0.25s; }
-  .card:nth-child(6) { animation-delay: 0.3s; }
-
   .card-title {
     font-family: 'Syne', sans-serif;
     font-weight: 700;
@@ -209,7 +203,13 @@
     box-shadow: 0 0 0 3px rgba(0, 229, 160, 0.1);
   }
 
-  input::placeholder { color: var(--border); }
+  input:disabled {
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--muted);
+    border-color: rgba(255, 255, 255, 0.05);
+  }
+
+  input::placeholder { color: #3a3f50; }
 
   .input-group {
     margin-bottom: 12px;
@@ -270,7 +270,7 @@
 
   .pop-badge {
     background: var(--pop);
-    color: #fff;
+    color: var(--pop-text);
   }
 
   .app-total {
@@ -317,7 +317,14 @@
   }
 
   /* KM / CONSUMO */
-  .km-grid {
+  .km-grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  
+  .km-grid-2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 12px;
@@ -354,17 +361,6 @@
     padding: 22px;
     position: relative;
     overflow: hidden;
-  }
-
-  .resumo-card::before {
-    content: '';
-    position: absolute;
-    top: -40px;
-    right: -40px;
-    width: 120px;
-    height: 120px;
-    background: radial-gradient(circle, rgba(0,229,160,0.08) 0%, transparent 70%);
-    pointer-events: none;
   }
 
   .resumo-title {
@@ -426,7 +422,6 @@
     font-weight: 800;
     font-size: 36px;
     letter-spacing: -1px;
-    transition: color 0.3s;
   }
 
   .lucro-neg { color: var(--danger) !important; }
@@ -456,8 +451,6 @@
     box-shadow: 0 8px 24px rgba(0,229,160,0.25);
   }
 
-  .export-btn:active { transform: translateY(0); }
-
   /* TOAST */
   .toast {
     position: fixed;
@@ -474,30 +467,12 @@
     transition: all 0.3s;
     pointer-events: none;
     z-index: 999;
-    white-space: nowrap;
   }
 
-  .toast.show {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-
-  /* SEPARADOR */
-  .divider {
-    height: 1px;
-    background: var(--border);
-    margin: 4px 0 12px;
-  }
-
-  .section-add {
-    display: flex;
-    gap: 8px;
-    margin-top: 10px;
-  }
-
-  .section-add input {
-    flex: 1;
-  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .divider { height: 1px; background: var(--border); margin: 4px 0 12px; }
+  .section-add { display: flex; gap: 8px; margin-top: 10px; }
+  .section-add input { flex: 1; }
 
   .add-btn {
     background: var(--surface2);
@@ -507,14 +482,10 @@
     width: 44px;
     border-radius: 8px;
     cursor: pointer;
-    transition: all 0.2s;
     flex-shrink: 0;
   }
 
-  .add-btn:hover { border-color: var(--accent); background: rgba(0,229,160,0.08); }
-
   .extra-gasto-list { margin-top: 8px; }
-
   .extra-gasto {
     display: flex;
     justify-content: space-between;
@@ -525,27 +496,11 @@
     margin-bottom: 6px;
     border: 1px solid var(--border);
     font-size: 13px;
-    animation: fadeUp 0.2s ease;
   }
-
-  .extra-gasto .eg-label { color: var(--text); }
-  .extra-gasto .eg-val { color: var(--danger); font-weight: 500; }
-  .extra-gasto .eg-del {
-    background: none;
-    border: none;
-    color: var(--muted);
-    cursor: pointer;
-    font-size: 16px;
-    padding: 0 0 0 10px;
-    transition: color 0.2s;
-  }
-  .extra-gasto .eg-del:hover { color: var(--danger); }
-
-  input[type=number]::-webkit-inner-spin-button,
-  input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+  .extra-gasto .eg-del { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; padding-left: 10px; }
 
   @media (max-width: 400px) {
-    .corridas-grid, .km-grid, .time-grid { grid-template-columns: 1fr; }
+    .corridas-grid, .km-grid-2, .km-grid-3, .time-grid { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -564,7 +519,6 @@
 
 <main>
 
-  <!-- HORÁRIOS -->
   <div class="card">
     <div class="card-title"><span>🕐</span> Horário de Trabalho</div>
     <div class="time-grid">
@@ -589,7 +543,6 @@
     </div>
   </div>
 
-  <!-- CORRIDAS -->
   <div class="card">
     <div class="card-title"><span>🚗</span> Corridas</div>
     <div class="corridas-grid">
@@ -599,13 +552,13 @@
         </div>
         <div class="input-group">
           <label>Nº Corridas</label>
-          <input type="number" id="uberCorridas" placeholder="0" min="0" oninput="calcularTudo()">
+          <input type="number" id="uberCorridas" placeholder="0" oninput="calcularTudo()">
         </div>
         <div class="input-group" style="margin-bottom:0">
           <label>Ganho (R$)</label>
           <div class="input-prefix">
             <span class="prefix-label">R$</span>
-            <input type="number" id="uberGanho" placeholder="0,00" min="0" step="0.01" oninput="calcularTudo()">
+            <input type="number" id="uberGanho" placeholder="0,00" step="0.01" oninput="calcularTudo()">
           </div>
         </div>
         <div class="app-total">Média: <strong id="uberMedia">—</strong></div>
@@ -616,13 +569,13 @@
         </div>
         <div class="input-group">
           <label>Nº Corridas</label>
-          <input type="number" id="popCorridas" placeholder="0" min="0" oninput="calcularTudo()">
+          <input type="number" id="popCorridas" placeholder="0" oninput="calcularTudo()">
         </div>
         <div class="input-group" style="margin-bottom:0">
           <label>Ganho (R$)</label>
           <div class="input-prefix">
             <span class="prefix-label">R$</span>
-            <input type="number" id="popGanho" placeholder="0,00" min="0" step="0.01" oninput="calcularTudo()">
+            <input type="number" id="popGanho" placeholder="0,00" step="0.01" oninput="calcularTudo()">
           </div>
         </div>
         <div class="app-total">Média: <strong id="popMedia">—</strong></div>
@@ -630,26 +583,45 @@
     </div>
   </div>
 
-  <!-- KM & CONSUMO -->
   <div class="card">
     <div class="card-title"><span>📍</span> Quilometragem & Consumo</div>
-    <div class="km-grid">
-      <div class="input-group" style="margin-bottom:0">
-        <label>KM Rodados</label>
-        <input type="number" id="kmRodados" placeholder="0" min="0" step="0.1" oninput="calcularTudo()">
+    <div class="km-grid-3">
+      <div class="input-group">
+        <label>KM Inicial</label>
+        <input type="number" id="kmInicial" placeholder="Ex: 45000" oninput="calcularKmPorOdometro()">
       </div>
-      <div class="input-group" style="margin-bottom:0">
-        <label>Litros usados (L)</label>
-        <input type="number" id="litrosUsados" placeholder="0" min="0" step="0.1" oninput="calcularTudo()">
+      <div class="input-group">
+        <label>KM Final</label>
+        <input type="number" id="kmFinal" placeholder="Ex: 45220" oninput="calcularKmPorOdometro()">
       </div>
     </div>
-    <div class="km-result">
-      <div class="km-result-label">Média de consumo</div>
-      <div class="km-result-value" id="mediaConsumo">— km/L</div>
+    
+    <div class="km-grid-2">
+      <div class="input-group">
+        <label>KM Rodados do Dia</label>
+        <input type="number" id="kmRodados" placeholder="0" step="0.1" oninput="calcularTudo(true)">
+      </div>
+      <div class="input-group">
+        <label>Média Painel (km/L)</label>
+        <input type="number" id="mediaPainel" placeholder="Ex: 10.5" step="0.1" oninput="calcularTudo()">
+      </div>
+    </div>
+
+    <div class="km-grid-2" style="margin-top: 12px;">
+      <div class="input-group" style="margin-bottom:0">
+        <label>Preço do Litro (R$)</label>
+        <div class="input-prefix">
+          <span class="prefix-label">R$</span>
+          <input type="number" id="precoCombustivel" placeholder="0,00" step="0.01" oninput="calcularTudo()">
+        </div>
+      </div>
+      <div class="km-result" style="margin-top:0">
+        <div class="km-result-label">Litros Consumidos</div>
+        <div class="km-result-value" id="litrosCalculados">— L</div>
+      </div>
     </div>
   </div>
 
-  <!-- GASTOS -->
   <div class="card">
     <div class="card-title"><span>💸</span> Gastos do Dia</div>
 
@@ -657,7 +629,7 @@
       <label>⛽ Combustível</label>
       <div class="input-prefix" style="width:160px">
         <span class="prefix-label">R$</span>
-        <input type="number" id="gastoCombustivel" placeholder="0,00" min="0" step="0.01" oninput="calcularTudo()">
+        <input type="number" id="gastoCombustivel" placeholder="0,00" step="0.01" oninput="calcularTudo()">
       </div>
     </div>
 
@@ -665,7 +637,7 @@
       <label>🍽️ Alimentação</label>
       <div class="input-prefix" style="width:160px">
         <span class="prefix-label">R$</span>
-        <input type="number" id="gastoAlimentacao" placeholder="0,00" min="0" step="0.01" oninput="calcularTudo()">
+        <input type="number" id="gastoAlimentacao" placeholder="0,00" step="0.01" oninput="calcularTudo()">
       </div>
     </div>
 
@@ -673,7 +645,7 @@
       <label>🅿️ Estacionamento</label>
       <div class="input-prefix" style="width:160px">
         <span class="prefix-label">R$</span>
-        <input type="number" id="gastoEstacionamento" placeholder="0,00" min="0" step="0.01" oninput="calcularTudo()">
+        <input type="number" id="gastoEstacionamento" placeholder="0,00" step="0.01" oninput="calcularTudo()">
       </div>
     </div>
 
@@ -683,7 +655,7 @@
       <input type="text" id="outroNome" placeholder="Descrição...">
       <div class="input-prefix" style="width:130px">
         <span class="prefix-label">R$</span>
-        <input type="number" id="outroValor" placeholder="0,00" min="0" step="0.01">
+        <input type="number" id="outroValor" placeholder="0,00" step="0.01">
       </div>
       <button class="add-btn" onclick="adicionarGasto()">+</button>
     </div>
@@ -695,7 +667,6 @@
     </div>
   </div>
 
-  <!-- RESUMO FINAL -->
   <div class="resumo-card">
     <div class="resumo-title">📊 Resumo do Dia</div>
 
@@ -716,7 +687,7 @@
       <span class="r-val r-white" id="r-km">0 km</span>
     </div>
     <div class="resumo-row">
-      <span class="r-label">⛽ Média consumo</span>
+      <span class="r-label">⛽ Litros gastos (Calculado)</span>
       <span class="r-val r-orange" id="r-consumo">—</span>
     </div>
     <div class="resumo-row">
@@ -726,6 +697,10 @@
     <div class="resumo-row">
       <span class="r-label">📈 Ganho por corrida</span>
       <span class="r-val r-green" id="r-porcorrida">—</span>
+    </div>
+    <div class="resumo-row">
+      <span class="r-label">🛣️ Ganho por KM</span>
+      <span class="r-val r-green" id="r-porKm">—</span>
     </div>
     <div class="resumo-row">
       <span class="r-label">⚡ Ganho por hora</span>
@@ -745,27 +720,37 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  // Date display
   const dateDisplay = document.getElementById('dateDisplay');
   const now = new Date();
   const dias = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
   const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-  dateDisplay.textContent = `${dias[now.getDay()]}, ${now.getDate()} ${meses[now.getMonth()]} ${now.getFullYear()}`;
+  dateDisplay.textContent = `${dias[now.getDay()]} , ${now.getDate()} ${meses[now.getMonth()]} ${now.getFullYear()}`;
 
   let extraGastos = [];
 
-  function fmt(n) {
-    return 'R$ ' + n.toFixed(2).replace('.', ',');
-  }
-
+  function fmt(n) { return 'R$ ' + n.toFixed(2).replace('.', ','); }
   function showToast(msg) {
     const toast = document.getElementById('toast');
-    toast.textContent = msg;
-    toast.classList.add('show');
+    toast.textContent = msg; toast.classList.add('show');
     setTimeout(() => { toast.classList.remove('show'); }, 3000);
   }
 
-  function calcularTudo() {
+  function calcularKmPorOdometro() {
+    const kmIni = parseFloat(document.getElementById('kmInicial').value) || 0;
+    const kmFim = parseFloat(document.getElementById('kmFinal').value) || 0;
+    
+    if (kmFim >= kmIni && kmIni > 0) {
+      document.getElementById('kmRodados').value = (kmFim - kmIni).toFixed(1);
+    }
+    calcularTudo(false);
+  }
+
+  function calcularTudo(limparOdometro = false) {
+    if (limparOdometro) {
+      document.getElementById('kmInicial').value = '';
+      document.getElementById('kmFinal').value = '';
+    }
+
     // Horários
     const ini = document.getElementById('horaInicio').value;
     const fim = document.getElementById('horaFim').value;
@@ -796,13 +781,26 @@
     const totalCorridas = uberC + popC;
     const totalBruto = uberG + popG;
 
-    // KM & Consumo
+    // KM & Consumo Dinâmico
     const km = parseFloat(document.getElementById('kmRodados').value) || 0;
-    const litros = parseFloat(document.getElementById('litrosUsados').value) || 0;
-    const media = km > 0 && litros > 0 ? (km / litros).toFixed(1) + ' km/L' : '—';
-    document.getElementById('mediaConsumo').textContent = media;
+    const mediaPainel = parseFloat(document.getElementById('mediaPainel').value) || 0;
+    const precoLitro = parseFloat(document.getElementById('precoCombustivel').value) || 0;
+    
+    let litrosCalculados = 0;
+    if (km > 0 && mediaPainel > 0) {
+      litrosCalculados = km / mediaPainel;
+      document.getElementById('litrosCalculados').textContent = litrosCalculados.toFixed(2) + ' L';
+      
+      // Auto-calcula o preço do combustível se o valor do litro existir
+      if (precoLitro > 0) {
+        const custoCombustivelAuto = litrosCalculados * precoLitro;
+        document.getElementById('gastoCombustivel').value = custoCombustivelAuto.toFixed(2);
+      }
+    } else {
+      document.getElementById('litrosCalculados').textContent = '— L';
+    }
 
-    // Gastos
+    // Gastos totais
     const g1 = parseFloat(document.getElementById('gastoCombustivel').value) || 0;
     const g2 = parseFloat(document.getElementById('gastoAlimentacao').value) || 0;
     const g3 = parseFloat(document.getElementById('gastoEstacionamento').value) || 0;
@@ -826,15 +824,16 @@
     lucroEl.textContent = (lucro < 0 ? '-' : '') + fmt(Math.abs(lucro));
     lucroEl.className = 'lucro-value ' + (lucro >= 0 ? 'lucro-pos' : 'lucro-neg');
 
-    // Resumo
+    // Resumo Final
     document.getElementById('r-corridas').textContent = totalCorridas;
     document.getElementById('r-bruto').textContent = fmt(totalBruto);
     document.getElementById('r-gastos').textContent = fmt(totalGastos);
-    document.getElementById('r-km').textContent = km > 0 ? km + ' km' : '0 km';
-    document.getElementById('r-consumo').textContent = media;
+    document.getElementById('r-km').textContent = km > 0 ? km.toFixed(1) + ' km' : '0 km';
+    document.getElementById('r-consumo').textContent = litrosCalculados > 0 ? litrosCalculados.toFixed(1) + ' L' : '—';
     document.getElementById('r-horas').textContent = document.getElementById('horasTrabalhadas').textContent;
     document.getElementById('r-porcorrida').textContent = totalCorridas > 0 ? fmt(totalBruto / totalCorridas) : '—';
     document.getElementById('r-porhora').textContent = ganhoPorHora ? fmt(ganhoPorHora) + '/h' : '—';
+    document.getElementById('r-porKm').textContent = km > 0 ? fmt(totalBruto / km) + '/km' : '—';
   }
 
   function adicionarGasto() {
@@ -854,8 +853,8 @@
     const list = document.getElementById('extraGastos');
     list.innerHTML = extraGastos.map(e => `
       <div class="extra-gasto">
-        <span class="eg-label">${e.nome}</span>
-        <span class="eg-val">- ${fmt(e.val)}</span>
+        <span>${e.nome}</span>
+        <span style="color:var(--danger)">- ${fmt(e.val)}</span>
         <button class="eg-del" onclick="removerGasto(${e.id})">✕</button>
       </div>
     `).join('');
@@ -880,68 +879,42 @@
     const ini = document.getElementById('horaInicio').value || '—';
     const fim = document.getElementById('horaFim').value || '—';
     const horas = document.getElementById('horasTrabalhadas').textContent;
-
-    const uberC = document.getElementById('uberCorridas').value || '0';
-    const uberG = document.getElementById('uberGanho').value || '0';
-
-    const popC = document.getElementById('popCorridas').value || '0';
-    const popG = document.getElementById('popGanho').value || '0';
-
-    const km = document.getElementById('kmRodados').value || '0';
-
-    const consumo = document.getElementById('mediaConsumo').textContent;
+    const totalC = document.getElementById('r-corridas').textContent;
     const bruto = document.getElementById('r-bruto').textContent;
     const gastos = document.getElementById('r-gastos').textContent;
-    const lucro = document.getElementById('lucroLiquido').textContent;
-
+    const km = document.getElementById('r-km').textContent;
+    const consumo = document.getElementById('r-consumo').textContent;
     const porcorrida = document.getElementById('r-porcorrida').textContent;
     const porhora = document.getElementById('r-porhora').textContent;
-
-    const totalC = document.getElementById('r-corridas').textContent;
+    const porKm = document.getElementById('r-porKm').textContent;
+    const lucro = document.getElementById('lucroLiquido').textContent;
 
     const d = new Date();
     const dataStr = `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()}`;
 
     const texto = `🚗 DIÁRIA DO MOTORISTA — ${dataStr}
-
 ━━━━━━━━━━━━━━━━━━━━
 
-⏱ Horário:
-${ini} às ${fim} (${horas})
+⏱ Horário: ${ini} às ${fim} (${horas})
+🚗 Corridas: ${totalC} feitas
 
-🚘 CORRIDAS
+📍 KM Rodado: ${km}
+⛽ Combustível Consumido: ${consumo}
 
-• Uber: ${uberC} corridas — R$ ${parseFloat(uberG || 0).toFixed(2).replace('.', ',')}
-• 99 Pop: ${popC} corridas — R$ ${parseFloat(popG || 0).toFixed(2).replace('.', ',')}
-
-• Total: ${totalC} corridas
-
-📍 KM Rodados: ${km} km
-⛽ Consumo médio: ${consumo}
-
-💰 Ganho bruto: ${bruto}
-💸 Total gastos: ${gastos}
-
+💰 Ganho Bruto: ${bruto}
+💸 Total Gastos: ${gastos}
 ━━━━━━━━━━━━━━━━━━━━
 
-📈 Ganho por corrida: ${porcorrida}
-⚡ Ganho por hora: ${porhora}
+📈 Ganho por Corrida: ${porcorrida}
+⚡ Ganho por Hora: ${porhora}
+🛣️ Ganho por KM: ${porKm}
 
 ✅ LUCRO LÍQUIDO: ${lucro}`;
 
     const textarea = document.createElement('textarea');
-    textarea.value = texto;
-    document.body.appendChild(textarea);
+    textarea.value = texto; document.body.appendChild(textarea);
     textarea.select();
-    textarea.setSelectionRange(0, 99999);
-
-    try {
-      document.execCommand('copy');
-      showToast('Resumo copiado! ✓');
-    } catch (err) {
-      showToast('Erro ao copiar');
-    }
-
+    try { document.execCommand('copy'); showToast('Resumo copiado! ✓'); } catch (err) { showToast('Erro ao copiar'); }
     document.body.removeChild(textarea);
   }
 </script>
