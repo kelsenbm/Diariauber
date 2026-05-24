@@ -23,8 +23,8 @@
     --accent2: #ff6b35;
     --uber: #000000;
     --uber-text: #ffffff;
-    --pop: #ff0066;
-    --pop-text: #ffffff;
+    --pop: #facc15; /* Amarelo 99 Pop */
+    --pop-text: #000000; /* Texto preto para o amarelo */
     --text: #e8eaf0;
     --muted: #6b7280;
     --danger: #ff4757;
@@ -80,7 +80,7 @@
   .sub-btn.active-pause { border-color: var(--danger); color: var(--danger); font-weight: bold; }
 
   /* GRIDS E INPUTS */
-  .time-grid, .corridas-grid, .km-grid-3, .km-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .corridas-grid, .km-grid-3, .km-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .km-grid-3 { grid-template-columns: 1fr 1fr; }
   .time-result, .km-result { background: var(--surface2); border-radius: 10px; padding: 14px; text-align: center; border: 1px solid var(--border); }
   .time-result-label, .km-result-label { font-size: 10px; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; }
@@ -199,7 +199,7 @@
   </div>
 
   <div class="card">
-    <div class="card-title"><span>⏱️</span> Taxímetro & Controle de Turno</div>
+    <div class="card-title"><span>⏱️</span> Controle de Turno</div>
     
     <button class="jornada-master-btn" id="masterBtn" onclick="gerenciarJornada()">🛫 Iniciar Jornada</button>
     
@@ -215,8 +215,8 @@
     </div>
 
     <div class="cron-sub-actions">
-      <button class="sub-btn" id="btnPausaCron" onclick="pausarParaAlmoco(true)" disabled>⏸️ Pausar P/ Almoço</button>
-      <button class="sub-btn" id="btnVoltaCron" onclick="pausarParaAlmoco(false)" disabled>▶️ Retomar Rua</button>
+      <button class="sub-btn" id="btnPausaCron" onclick="pausarJornada(true)" disabled>⏸️ Fazer Pausa</button>
+      <button class="sub-btn" id="btnVoltaCron" onclick="pausarJornada(false)" disabled>▶️ Retomar</button>
     </div>
 
     <div class="divider"></div>
@@ -238,7 +238,7 @@
     </div>
   </div>
 
-  <div class="card">
+  <div class="card" style="border-color: var(--pop);">
     <div class="card-title"><span>🚗</span> Corridas</div>
     <div class="corridas-grid">
       <div class="app-box">
@@ -253,7 +253,7 @@
         </div>
         <div class="app-total">Média: <strong id="uberMedia">—</strong></div>
       </div>
-      <div class="app-box">
+      <div class="app-box" style="border-color: var(--pop);">
         <div class="app-label"><span class="app-badge pop-badge">99 POP</span></div>
         <div class="input-group" style="margin-bottom:8px">
           <label>Nº Corridas</label>
@@ -365,8 +365,8 @@
   
   // Estado dos Cronometros Modernos
   let statusJornada = "parado"; // parado | rodando | pausado
-  let segundosTurno = 0;
-  let segundosParado = 0;
+  let segundosTurnoBruto = 0; // Tempo total desde o início
+  let segundosParado = 0; // Tempo acumulado em pausa
   let timerInterval = null;
 
   function fmt(n) { return 'R$ ' + n.toFixed(2).replace('.', ','); }
@@ -409,17 +409,15 @@
       document.getElementById('btnPausaCron').disabled = false;
       document.getElementById('boxDirecao').classList.add('ativo-dir');
       
-      segundosTurno = 0;
+      segundosTurnoBruto = 0;
       segundosParado = 0;
 
       timerInterval = setInterval(() => {
-        if (statusJornada === "rodando") {
-          segundosTurno++;
-        } else if (statusJornada === "pausado") {
-          segundosTurno++; // Turno bruto continua correndo
-          segundosParado++;
+        segundosTurnoBruto++; // O tempo total de turno sempre corre
+        if (statusJornada === "pausado") {
+          segundosParado++; // O tempo parado só corre na pausa
         }
-        document.getElementById('txtTurnoTotal').textContent = formatarTempo(segundosTurno);
+        document.getElementById('txtTurnoTotal').textContent = formatarTempo(segundosTurnoBruto);
         document.getElementById('txtTempoParado').textContent = formatarTempo(segundosParado);
         calcularTudo(false, false);
       }, 1000);
@@ -442,12 +440,12 @@
       document.getElementById('boxDirecao').classList.remove('ativo-dir');
       document.getElementById('boxParado').classList.remove('ativo-par');
 
-      calcularTudo(false, true);
+      calcularTudo(false, true); // Força o uso das horas digitadas para cravar o fim
       showToast("Jornada Encerrada! Veja o resumo abaixo. 🛑");
     }
   }
 
-  function pausarParaAlmoco(devePausar) {
+  function pausarJornada(devePausar) {
     if (devePausar) {
       statusJornada = "pausado";
       document.getElementById('btnPausaCron').disabled = true;
@@ -455,7 +453,7 @@
       document.getElementById('btnVoltarCron').disabled = false;
       document.getElementById('boxDirecao').classList.remove('ativo-dir');
       document.getElementById('boxParado').classList.add('ativo-par');
-      showToast("Descanso ativado! Aproveite o rango 🍽️");
+      showToast("Pausa ativada! 🍽️");
     } else {
       statusJornada = "rodando";
       document.getElementById('btnPausaCron').disabled = false;
@@ -482,14 +480,14 @@
       document.getElementById('kmFinal').value = '';
     }
 
-    let horasTurnoBruto = 0;
+    let horasTurnoBrutoCalculo = 0;
     let tempoDeTextoExibido = "0h00m";
     let horasDescontoParado = segundosParado / 3600;
 
     // Decidir se calcula pelo Cronômetro ou pelas Caixas Digitadas
     if (statusJornada !== "parado" && !forcarUsoDosCamposManuais) {
-      horasTurnoBruto = segundosTurno / 3600;
-      let mTotal = Math.floor(segundosTurno / 60);
+      horasTurnoBrutoCalculo = segundosTurnoBruto / 3600;
+      let mTotal = Math.floor(segundosTurnoBruto / 60);
       tempoDeTextoExibido = `${Math.floor(mTotal/60)}h${(mTotal%60).toString().padStart(2,'0')}m`;
     } else {
       // Cálculo via caixas manuais
@@ -500,7 +498,7 @@
         const [h2, m2] = fim.split(':').map(Number);
         let minutos = (h2 * 60 + m2) - (h1 * 60 + m1);
         if (minutos < 0) minutos += 24 * 60;
-        horasTurnoBruto = minutos / 60;
+        horasTurnoBrutoCalculo = minutos / 60;
         tempoDeTextoExibido = `${Math.floor(minutos / 60)}h${(minutos % 60).toString().padStart(2,'0')}m`;
       }
     }
@@ -539,9 +537,9 @@
 
     document.getElementById('totalGastos').textContent = fmt(totalGastos);
 
-    // Tempo Líquido na Direção
-    let horasLiquidasDirecao = horasTurnoBruto - horasDescontoParado;
-    if (horasLiquidasDirecao < 0.05) horasLiquidasDirecao = horasTurnoBruto; // Proteção contra bugs
+    // Tempo Líquido na Direção (Turno Bruto - Tempo Parado)
+    let horasLiquidasDirecao = horasTurnoBrutoCalculo - horasDescontoParado;
+    if (horasLiquidasDirecao < 0.05) horasLiquidasDirecao = horasTurnoBrutoCalculo; // Proteção
 
     if (horasLiquidasDirecao > 0 && totalBruto > 0) {
       document.getElementById('ganhoPorHora').textContent = fmt(totalBruto / horasLiquidasDirecao) + '/h';
@@ -668,7 +666,7 @@
     historico.sort((a,b) => new Date(b.data) - new Date(a.data));
     localStorage.setItem('motorista_historico', JSON.stringify(historico));
     renderHistorico();
-    calcularTudo(false, true);
+    calcularTudo(false, true); // Força o uso dos campos manuais para salvar dados corretos
     showToast('Diária salva com sucesso! 💾');
   }
 
@@ -739,7 +737,7 @@
       if(i.type !== 'number' || (!i.id.startsWith('alvo'))) i.value = '';
     });
     extraGastos = [];
-    segundosTurno = 0;
+    segundosTurnoBruto = 0;
     segundosParado = 0;
     clearInterval(timerInterval);
     statusJornada = "parado";
