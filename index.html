@@ -21,8 +21,8 @@
     --border: #2a2f3d;
     --accent: #00e5a0;
     --accent2: #ff6b35;
+    --particular: #3b82f6;
     --uber: #000000;
-    --uber-text: #ffffff;
     --pop: #facc15;
     --pop-text: #000000; 
     --text: #e8eaf0;
@@ -98,8 +98,8 @@
   .sub-btn.active-pause { border-color: var(--danger); color: var(--danger); font-weight: bold; }
 
   /* ===================== GRIDS E INPUTS ===================== */
-  .corridas-grid, .km-grid-3, .km-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .km-grid-3 { grid-template-columns: 1fr 1fr; }
+  .corridas-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+  .km-grid-3, .km-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .time-result, .km-result { background: var(--surface2); border-radius: 10px; padding: 14px; text-align: center; border: 1px solid var(--border); }
   .time-result-label, .km-result-label { font-size: 10px; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; }
   .time-result-value, .km-result-value { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 18px; color: var(--accent); }
@@ -112,9 +112,11 @@
   .prefix-label { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 13px; }
 
   .app-box { background: var(--surface2); border-radius: 10px; padding: 14px; border: 1px solid var(--border); }
-  .app-badge { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 11px; padding: 3px 8px; border-radius: 4px; }
+  .app-badge { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 11px; padding: 3px 8px; border-radius: 4px; display: inline-block; }
   .uber-badge { background: #fff; color: #000; }
   .pop-badge { background: var(--pop); color: var(--pop-text); }
+  .particular-badge { background: var(--particular); color: #fff; }
+  .app-inputs-inline { display: grid; grid-template-columns: 1fr 1.2fr; gap: 10px; }
   .app-total { font-size: 10px; color: var(--muted); margin-top: 8px; }
   .app-total strong { color: var(--text); font-size: 12px; }
 
@@ -129,7 +131,7 @@
   .lbl-detalhe-km { font-size: 11px; color: var(--muted); margin-top: 2px; display: block; }
   .val-detalhe-mes { font-family: 'Syne', sans-serif; font-weight: 700; color: var(--warn); }
 
-  /* ===================== RESUMO ===================== */
+  /* ===================== RESUMO E DESEMPENHO ===================== */
   .resumo-card { background: linear-gradient(135deg, #0f1a14 0%, #0d1520 100%); border: 1px solid rgba(0, 229, 160, 0.25); border-radius: var(--radius); padding: 22px; }
   .resumo-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 13px; color: var(--accent); margin-bottom: 18px; text-transform: uppercase; }
   .resumo-row { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; }
@@ -142,10 +144,10 @@
   .save-btn { background: var(--accent); color: #000; font-size: 14px; margin-top: 15px; }
 
   /* ===================== BARRA DE NAVEGAÇÃO INFERIOR SPA ===================== */
-  .nav-inferior-fixa { position: fixed; bottom: 0; left: 0; right: 0; background-color: var(--surface); border-top: 1px solid var(--border); display: grid; grid-template-columns: 1fr 1fr; height: 72px; z-index: 1000; box-shadow: 0 -4px 20px rgba(0,0,0,0.3); }
-  .nav-item-btn { background: none; border: none; color: var(--muted); display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .nav-inferior-fixa { position: fixed; bottom: 0; left: 0; right: 0; background-color: var(--surface); border-top: 1px solid var(--border); display: grid; grid-template-columns: 1fr 1fr 1fr; height: 72px; z-index: 1000; box-shadow: 0 -4px 20px rgba(0,0,0,0.3); }
+  .nav-item-btn { background: none; border: none; color: var(--muted); display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; font-size: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
   .nav-item-btn.ativo { color: var(--accent); background-color: rgba(255, 255, 255, 0.02); }
-  .nav-item-btn svg { width: 22px; height: 22px; fill: currentColor; }
+  .nav-item-btn svg { width: 20px; height: 20px; fill: currentColor; }
 
   /* HISTÓRICO */
   .hist-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
@@ -166,7 +168,7 @@
   input[type=number]::-webkit-inner-spin-button,
   input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
 
-  @media (max-width: 400px) { .corridas-grid, .km-grid-2, .km-grid-3, .meta-input-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 400px) { .km-grid-2, .km-grid-3, .meta-input-grid { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -181,14 +183,18 @@
   </div>
   <div class="date-picker-group">
     <label>📅 DATA DO TRABALHO:</label>
-    <input type="date" id="dataTrabalho" onchange="atualizarMetasVisuais()">
+    <input type="date" id="dataTrabalho" onchange="atualizarMetasVisuais(); carregarDiariaSalvaDoDia();">
   </div>
 </header>
 
 <main>
 
+  <!-- ========================================================== -->
+  <!-- ABA 1: DIÁRIO DE TRABALHO (CONTEÚDO PRINCIPAL)             -->
+  <!-- ========================================================== -->
   <div id="aba-diario" class="aba-conteudo">
     
+    <!-- METAS -->
     <div class="card">
       <div class="card-title"><span>🎯</span> Painel de Metas Financeiras</div>
       
@@ -243,6 +249,7 @@
       </div>
     </div>
 
+    <!-- TURNO -->
     <div class="card">
       <div class="card-title"><span>⏱️</span> Controle de Turno</div>
       <button class="jornada-master-btn parado" id="masterBtn" onclick="gerenciarJornada()">🛫 Iniciar Jornada</button>
@@ -277,24 +284,45 @@
       </div>
     </div>
 
-    <div class="card" style="border-color: var(--pop);">
-      <div class="card-title"><span>🚗</span> Corridas</div>
+    <!-- CORRIDAS (UBER, 99 POP E PARTICULAR) -->
+    <div class="card" style="border-color: rgba(250, 204, 21, 0.3);">
+      <div class="card-title"><span>🚗</span> Corridas e Faturamento</div>
       <div class="corridas-grid">
+        
+        <!-- UBER -->
         <div class="app-box">
           <div style="margin-bottom:10px"><span class="app-badge uber-badge">UBER</span></div>
-          <div style="margin-bottom:8px"><label>Nº Corridas</label><input type="number" id="uberCorridas" placeholder="0" oninput="calcularTudo()"></div>
-          <div><label>Ganho (R$)</label><div class="input-prefix"><span class="prefix-label">R$</span><input type="number" id="uberGanho" placeholder="0,00" step="0.01" oninput="calcularTudo()"></div></div>
+          <div class="app-inputs-inline">
+            <div><label>Corridas</label><input type="number" id="uberCorridas" placeholder="0" oninput="calcularTudo()"></div>
+            <div><label>Ganho (R$)</label><div class="input-prefix"><span class="prefix-label">R$</span><input type="number" id="uberGanho" placeholder="0,00" step="0.01" oninput="calcularTudo()"></div></div>
+          </div>
           <div class="app-total">Média: <strong id="uberMedia">—</strong></div>
         </div>
-        <div class="app-box" style="border-color: var(--pop);">
+
+        <!-- 99 POP -->
+        <div class="app-box" style="border-color: rgba(250, 204, 21, 0.4);">
           <div style="margin-bottom:10px"><span class="app-badge pop-badge">99 POP</span></div>
-          <div style="margin-bottom:8px"><label>Nº Corridas</label><input type="number" id="popCorridas" placeholder="0" oninput="calcularTudo()"></div>
-          <div><label>Ganho (R$)</label><div class="input-prefix"><span class="prefix-label">R$</span><input type="number" id="popGanho" placeholder="0,00" step="0.01" oninput="calcularTudo()"></div></div>
+          <div class="app-inputs-inline">
+            <div><label>Corridas</label><input type="number" id="popCorridas" placeholder="0" oninput="calcularTudo()"></div>
+            <div><label>Ganho (R$)</label><div class="input-prefix"><span class="prefix-label">R$</span><input type="number" id="popGanho" placeholder="0,00" step="0.01" oninput="calcularTudo()"></div></div>
+          </div>
           <div class="app-total">Média: <strong id="popMedia">—</strong></div>
         </div>
+
+        <!-- PARTICULAR -->
+        <div class="app-box" style="border-color: rgba(59, 130, 246, 0.4);">
+          <div style="margin-bottom:10px"><span class="app-badge particular-badge">PARTICULAR</span></div>
+          <div class="app-inputs-inline">
+            <div><label>Viagens</label><input type="number" id="particularCorridas" placeholder="0" oninput="calcularTudo()"></div>
+            <div><label>Ganho (R$)</label><div class="input-prefix"><span class="prefix-label">R$</span><input type="number" id="particularGanho" placeholder="0,00" step="0.01" oninput="calcularTudo()"></div></div>
+          </div>
+          <div class="app-total">Média: <strong id="particularMedia">—</strong></div>
+        </div>
+
       </div>
     </div>
 
+    <!-- KM -->
     <div class="card">
       <div class="card-title"><span>📍</span> Quilometragem & Consumo</div>
       <div class="km-grid-3" style="margin-bottom:12px">
@@ -311,6 +339,7 @@
       </div>
     </div>
 
+    <!-- GASTOS -->
     <div class="card">
       <div class="card-title"><span>💸</span> Gastos do Dia</div>
       <div class="gasto-item"><label>⛽ Combustível</label><div class="input-prefix" style="width:160px"><span class="prefix-label">R$</span><input type="number" id="gastoCombustivel" placeholder="0,00" oninput="calcularTudo()"></div></div>
@@ -327,6 +356,7 @@
       <div class="gastos-total-bar" style="margin-top:14px"><span style="color:var(--muted); font-size:11px">TOTAL GASTOS</span><span class="val" id="totalGastos">R$ 0,00</span></div>
     </div>
 
+    <!-- RESUMO -->
     <div class="resumo-card">
       <div class="resumo-title">📊 Resumo Final Calculado</div>
       <div class="resumo-row"><span style="color:var(--muted)">🚗 Corridas Executadas</span><span style="font-weight:bold" id="r-corridas">0</span></div>
@@ -347,12 +377,45 @@
       <button class="export-btn" onclick="exportarResumo()">📋 Copiar Texto Resumo</button>
     </div>
 
+    <!-- HISTÓRICO -->
     <div class="card">
       <div class="card-title"><span>📜</span> Histórico de Diárias Salvas</div>
       <div id="listaHistorico"></div>
     </div>
   </div>
 
+  <!-- ========================================================== -->
+  <!-- ABA 2: NOVO PAINEL DE DESEMPENHO (SEMANA / MÊS)           -->
+  <!-- ========================================================== -->
+  <div id="aba-desempenho" class="aba-conteudo" style="display: none;">
+    <div class="card">
+      <div class="card-title"><span>📅</span> Resumo da Semana Atual</div>
+      <div class="resumo-row"><span style="color:var(--muted)">💰 Faturamento Bruto</span><span style="color:var(--accent); font-weight:bold;" id="sem-bruto">R$ 0,00</span></div>
+      <div class="resumo-row"><span style="color:var(--muted)">💸 Gastos Totais</span><span style="color:var(--danger); font-weight:bold;" id="sem-gastos">R$ 0,00</span></div>
+      <div class="resumo-row"><span style="color:var(--muted)">🏁 Quilometragem Rodada</span><span id="sem-km">0 km</span></div>
+      <div class="resumo-row"><span style="color:var(--muted)">🚗 Total de Corridas</span><span id="sem-corridas">0</span></div>
+      <div class="lucro-box">
+        <div class="lucro-label">LUCRO LÍQUIDO DA SEMANA</div>
+        <div class="lucro-value" id="sem-lucro" style="color:var(--accent)">R$ 0,00</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span>🗓️</span> Resumo do Mês Atual</div>
+      <div class="resumo-row"><span style="color:var(--muted)">💰 Faturamento Bruto</span><span style="color:var(--accent); font-weight:bold;" id="mes-bruto">R$ 0,00</span></div>
+      <div class="resumo-row"><span style="color:var(--muted)">💸 Gastos Totais</span><span style="color:var(--danger); font-weight:bold;" id="mes-gastos">R$ 0,00</span></div>
+      <div class="resumo-row"><span style="color:var(--muted)">🏁 Quilometragem Rodada</span><span id="mes-km">0 km</span></div>
+      <div class="resumo-row"><span style="color:var(--muted)">🚗 Total de Corridas</span><span id="mes-corridas">0</span></div>
+      <div class="lucro-box">
+        <div class="lucro-label">LUCRO LÍQUIDO DO MÊS</div>
+        <div class="lucro-value" id="mes-lucro" style="color:var(--accent)">R$ 0,00</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================== -->
+  <!-- ABA 3: CONTROLE PROFUNDO DO VEÍCULO (MEU KM)              -->
+  <!-- ========================================================== -->
   <div id="aba-veiculo" class="aba-conteudo" style="display: none;">
     
     <div class="card">
@@ -397,6 +460,7 @@
       </div>
     </div>
 
+    <!-- VISUALIZAÇÃO DOS CUSTOS POR KM REAL -->
     <div class="card custo-painel-card">
       <div class="card-title" style="color: var(--warn);">📊 Painel de Custo Estrutural por KM</div>
       
@@ -436,14 +500,21 @@
 
 </main>
 
+<!-- ========================================================== -->
+<!-- BARRA DE NAVEGAÇÃO INFERIOR FIXA (SPA NAV - 3 ABAS)         -->
+<!-- ========================================================== -->
 <nav class="nav-inferior-fixa">
   <button class="nav-item-btn ativo" id="nav-btn-diario" onclick="trocarAba('diario')">
     <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-    Diário de Bordo
+    Diário
+  </button>
+  <button class="nav-item-btn" id="nav-btn-desempenho" onclick="trocarAba('desempenho')">
+    <svg viewBox="0 0 24 24"><path d="M5 9.2h3V19H5zM10.6 5h2.8v14h-2.8zm5.6 8H19v6h-2.8z"/></svg>
+    Desempenho
   </button>
   <button class="nav-item-btn" id="nav-btn-veiculo" onclick="trocarAba('veiculo')">
     <svg viewBox="0 0 24 24"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg>
-    Meu Carro (Custos)
+    Meu Carro
   </button>
 </nav>
 
@@ -480,13 +551,17 @@
   // GERENCIAMENTO SPA DE TROCA DE ABAS
   function trocarAba(nomeAba) {
     document.getElementById('aba-diario').style.display = nomeAba === 'diario' ? 'flex' : 'none';
+    document.getElementById('aba-desempenho').style.display = nomeAba === 'desempenho' ? 'flex' : 'none';
     document.getElementById('aba-veiculo').style.display = nomeAba === 'veiculo' ? 'flex' : 'none';
     
     document.getElementById('nav-btn-diario').classList.toggle('ativo', nomeAba === 'diario');
+    document.getElementById('nav-btn-desempenho').classList.toggle('ativo', nomeAba === 'desempenho');
     document.getElementById('nav-btn-veiculo').classList.toggle('ativo', nomeAba === 'veiculo');
     
     if(nomeAba === 'veiculo') {
       calcularCustosVeiculo();
+    } else if(nomeAba === 'desempenho') {
+      atualizarPainelDesempenho();
     }
   }
 
@@ -714,12 +789,15 @@
     const uberG = parseFloat(document.getElementById('uberGanho').value) || 0;
     const popC  = parseFloat(document.getElementById('popCorridas').value) || 0;
     const popG  = parseFloat(document.getElementById('popGanho').value) || 0;
+    const partC = parseFloat(document.getElementById('particularCorridas').value) || 0;
+    const partG = parseFloat(document.getElementById('particularGanho').value) || 0;
 
-    document.getElementById('uberMedia').textContent = uberC > 0 ? fmt(uberG / uberC) : '—';
-    document.getElementById('popMedia').textContent  = popC > 0  ? fmt(popG  / popC)  : '—';
+    document.getElementById('uberMedia').textContent       = uberC > 0 ? fmt(uberG / uberC) : '—';
+    document.getElementById('popMedia').textContent        = popC > 0  ? fmt(popG  / popC)  : '—';
+    document.getElementById('particularMedia').textContent = partC > 0 ? fmt(partG / partC) : '—';
 
-    const totalCorridas = uberC + popC;
-    const totalBruto = uberG + popG;
+    const totalCorridas = uberC + popC + partC;
+    const totalBruto = uberG + popG + partG;
 
     const km = parseFloat(document.getElementById('kmRodados').value) || 0;
     const mediaPainel = parseFloat(document.getElementById('mediaPainel').value) || 0;
@@ -741,7 +819,6 @@
     const g3 = parseFloat(document.getElementById('gastoEstacionamento').value) || 0;
     const gExtras = extraGastos.reduce((a, b) => a + b.val, 0);
     
-    // Inclusão inteligente do custo de desgaste/depreciação por KM do carro
     let custoVeiculoPorKmSalvo = parseFloat(localStorage.getItem('custo_veiculo_por_km')) || 0;
     let despesaEstruturalAmortizada = km * custoVeiculoPorKmSalvo;
 
@@ -785,6 +862,7 @@
 
     const uberG  = parseFloat(document.getElementById('uberGanho').value)          || 0;
     const popG   = parseFloat(document.getElementById('popGanho').value)           || 0;
+    const partG  = parseFloat(document.getElementById('particularGanho').value)    || 0;
     const g1     = parseFloat(document.getElementById('gastoCombustivel').value)   || 0;
     const g2     = parseFloat(document.getElementById('gastoAlimentacao').value)   || 0;
     const g3     = parseFloat(document.getElementById('gastoEstacionamento').value)|| 0;
@@ -794,7 +872,7 @@
     let custoVeiculoPorKmSalvo = parseFloat(localStorage.getItem('custo_veiculo_por_km')) || 0;
     let despesaEstruturalAmortizada = km * custoVeiculoPorKmSalvo;
 
-    const lucroTela = (uberG + popG) - (g1 + g2 + g3 + gExtras + despesaEstruturalAmortizada);
+    const lucroTela = (uberG + popG + partG) - (g1 + g2 + g3 + gExtras + despesaEstruturalAmortizada);
 
     let liquidoDia    = lucroTela;
     let liquidoSemana = lucroTela;
@@ -815,7 +893,7 @@
       if(dDate.getMonth() === selDate.getMonth() && dDate.getFullYear() === selDate.getFullYear()) liquidoMes += d.lucro;
     });
 
-    if((uberG + popG) === 0 && g1 === 0 && g2 === 0) {
+    if((uberG + popG + partG) === 0 && g1 === 0 && g2 === 0) {
       const registroHoje = historico.find(d => d.data === dataSelecionadaStr);
       if(registroHoje) liquidoDia = registroHoje.lucro;
     }
@@ -823,6 +901,61 @@
     atualizarBarra('barraDia',    'pctDiaBadge',    'conquistaDia',    'metaDiaTexto',    liquidoDia,    alvoDia);
     atualizarBarra('barraSemana', 'pctSemanaBadge', 'conquistaSemana', 'metaSemanaTexto', liquidoSemana, alvoSemana);
     atualizarBarra('barraMes',    'pctMesBadge',    'conquistaMes',    'metaMesTexto',    liquidoMes,    alvoMes);
+  }
+
+  function atualizarPainelDesempenho() {
+    const hoje = new Date();
+    
+    // Configura limites da Semana Atual
+    const inicioSemana = new Date(hoje);
+    inicioSemana.setDate(hoje.getDate() - hoje.getDay());
+    inicioSemana.setHours(0,0,0,0);
+    const fimSemana = new Date(inicioSemana);
+    fimSemana.setDate(inicioSemana.getDate() + 6);
+    fimSemana.setHours(23,59,59,999);
+
+    let semBruto = 0, semGastos = 0, semLucro = 0, semKm = 0, semCorr = 0;
+    let mesBruto = 0, mesGastos = 0, mesLucro = 0, mesKm = 0, mesCorr = 0;
+
+    historico.forEach(d => {
+      const dDate = new Date(d.data + 'T12:00:00');
+      
+      // Semana Atual
+      if(dDate >= inicioSemana && dDate <= fimSemana) {
+        semBruto += d.bruto;
+        semGastos += d.gastos;
+        semLucro += d.lucro;
+        semKm += d.km;
+        semCorr += d.corridas;
+      }
+      
+      // Mês Atual
+      if(dDate.getMonth() === hoje.getMonth() && dDate.getFullYear() === hoje.getFullYear()) {
+        mesBruto += d.bruto;
+        mesGastos += d.gastos;
+        mesLucro += d.lucro;
+        mesKm += d.km;
+        mesCorr += d.corridas;
+      }
+    });
+
+    // Renderiza dados da Semana
+    document.getElementById('sem-bruto').textContent = fmt(semBruto);
+    document.getElementById('sem-gastos').textContent = fmt(semGastos);
+    document.getElementById('sem-km').textContent = semKm.toFixed(1) + ' km';
+    document.getElementById('sem-corridas').textContent = semCorr;
+    const semLucroEl = document.getElementById('sem-lucro');
+    semLucroEl.textContent = (semLucro < 0 ? '-' : '') + fmt(Math.abs(semLucro));
+    semLucroEl.style.color = semLucro >= 0 ? 'var(--accent)' : 'var(--danger)';
+
+    // Renderiza dados do Mês
+    document.getElementById('mes-bruto').textContent = fmt(mesBruto);
+    document.getElementById('mes-gastos').textContent = fmt(mesGastos);
+    document.getElementById('mes-km').textContent = mesKm.toFixed(1) + ' km';
+    document.getElementById('mes-corridas').textContent = mesCorr;
+    const mesLucroEl = document.getElementById('mes-lucro');
+    mesLucroEl.textContent = (mesLucro < 0 ? '-' : '') + fmt(Math.abs(mesLucro));
+    mesLucroEl.style.color = mesLucro >= 0 ? 'var(--accent)' : 'var(--danger)';
   }
 
   function salvarDiariaNoHistorico() {
@@ -833,6 +966,9 @@
     const uberG = parseFloat(document.getElementById('uberGanho').value) || 0;
     const popC  = parseFloat(document.getElementById('popCorridas').value) || 0;
     const popG  = parseFloat(document.getElementById('popGanho').value) || 0;
+    const partC = parseFloat(document.getElementById('particularCorridas').value) || 0;
+    const partG = parseFloat(document.getElementById('particularGanho').value) || 0;
+
     const km    = parseFloat(document.getElementById('kmRodados').value) || 0;
     const g1    = parseFloat(document.getElementById('gastoCombustivel').value) || 0;
     const g2    = parseFloat(document.getElementById('gastoAlimentacao').value) || 0;
@@ -842,19 +978,42 @@
     let custoVeiculoPorKmSalvo = parseFloat(localStorage.getItem('custo_veiculo_por_km')) || 0;
     let despesaEstruturalAmortizada = km * custoVeiculoPorKmSalvo;
 
-    const totalBruto  = uberG + popG;
+    const totalBruto  = uberG + popG + partG;
     const totalGastos = g1 + g2 + g3 + gExtras + despesaEstruturalAmortizada;
     const lucroFinal  = totalBruto - totalGastos;
 
     if(totalBruto === 0 && totalGastos === 0) { showToast('Preencha os ganhos ou despesas para salvar!'); return; }
 
     historico = historico.filter(h => h.data !== dataSel);
-    historico.unshift({ data: dataSel, corridas: uberC + popC, bruto: totalBruto, gastos: totalGastos, lucro: lucroFinal, km });
+    historico.unshift({ 
+      data: dataSel, 
+      corridas: uberC + popC + partC, 
+      uberC, uberG, popC, popG, partC, partG,
+      bruto: totalBruto, 
+      gastos: totalGastos, 
+      lucro: lucroFinal, 
+      km 
+    });
     historico.sort((a,b) => new Date(b.data) - new Date(a.data));
     localStorage.setItem('motorista_historico', JSON.stringify(historico));
     renderHistorico();
     calcularTudo(false, true); 
     showToast('Diária salva com sucesso! 💾');
+  }
+
+  function carregarDiariaSalvaDoDia() {
+    const dataSel = campoData.value;
+    const salva = historico.find(h => h.data === dataSel);
+    if(salva) {
+      document.getElementById('uberCorridas').value = salva.uberC || '';
+      document.getElementById('uberGanho').value = salva.uberG || '';
+      document.getElementById('popCorridas').value = salva.popC || '';
+      document.getElementById('popGanho').value = salva.popG || '';
+      document.getElementById('particularCorridas').value = salva.partC || '';
+      document.getElementById('particularGanho').value = salva.partG || '';
+      document.getElementById('kmRodados').value = salva.km || '';
+      calcularTudo(false, true);
+    }
   }
 
   function renderHistorico() {
@@ -918,7 +1077,7 @@
   }
 
   function resetTudo() {
-    if (!confirm('Deseja limpar todos os campos digitados na tela? (Seu histórico e configurações de custos fixos não serão apagados)')) return;
+    if (!confirm('Deseja limpar todos os campos digitados na tela? (Seu histórico e configurações não serão apagados)')) return;
     document.querySelectorAll('#aba-diario input').forEach(i => {
       if(i.type === 'date') return;
       if(i.id && i.id.startsWith('alvo')) return;
@@ -973,6 +1132,7 @@
   carregarCustosVeiculoConfig();
   renderHistorico();
   calcularCustosVeiculo();
+  carregarDiariaSalvaDoDia();
   calcularTudo(false, true);
 </script>
 </body>
